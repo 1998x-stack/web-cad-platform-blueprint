@@ -17,7 +17,7 @@ test('real WASM worker: build, compare native, mesh, STEP roundtrip, parametric 
     closeEnough(out.evidence.surfaceAreaMm2,2*(120*60+120*30+60*30)-2*Math.PI*4*4+2*Math.PI*4*30,1e-3,'analytical surface area mm2');
     for(let i=0;i<6;i++)closeEnough(out.evidence.bboxMm[i],reference.source.bbox_mm[i],1e-4,`bbox[${i}]`);
     const mesh=await client.tessellate(out.geometryId);assert.ok(mesh.indices.length>12);assert.equal(mesh.sourceDocumentRevision,base.revision);
-    const bytes=await client.exportStep(out.geometryId);if(process.env.WASM_STEP_OUTPUT)writeFileSync(process.env.WASM_STEP_OUTPUT,bytes);assert.match(new TextDecoder().decode(bytes).slice(0,200),'ISO-10303-21');
+    const bytes=await client.exportStep(out.geometryId);if(process.env.WASM_STEP_OUTPUT)writeFileSync(process.env.WASM_STEP_OUTPUT,bytes);assert.match(new TextDecoder().decode(bytes).slice(0,200),/ISO-10303-21/);
     const changed=structuredClone(base);changed.revision=base.revision+1;changed.parameters.holeRadius.value=6;
     const newer=await client.build(changed);assert.ok(newer.evidence.volumeMm3<out.evidence.volumeMm3);
     closeEnough(newer.evidence.volumeMm3,212607.079934123,1e-3,'parametric volume');
