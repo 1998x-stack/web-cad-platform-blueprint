@@ -2,6 +2,15 @@
 
 > **版本**：v1.0 · **调研基准**：2026-11-17 · **状态**：规划与可执行命令引擎概念验证（**不是完整 CAD 产品**）
 
+## CAD-004 / CAD-005 最新实现
+
+- [OCCT native B-Rep / STEP round-trip 实测记录](docs/19-cad-004-005-evidence.md)
+- [Geometry Python 参考内核与复现命令](packages/cad-geometry-python/README.md)
+- [技术决策 ADR-0001](docs/adr/0001-native-occt-reference-then-wasm.md)
+- [真实 STEP 示例](samples/precision-block.step) 与 [几何证据](samples/precision-block.evidence.json)
+
+**当前状态：** 使用原生 OCCT 完成几何构建、校验与 STEP 往返；浏览器 WASM Worker 尚未实现，不能把本参考内核称为完整 Web CAD。
+
 ## 项目目标
 
 构建以 **精确 B-Rep CAD + 参数化历史** 为底座、以 **3D 模型资产市场** 为入口、以 **标准化导出** 和 **MCP Agent** 为扩展的 Web CAD 平台。

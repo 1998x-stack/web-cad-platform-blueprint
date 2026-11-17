@@ -1,0 +1,43 @@
+name: Blueprint checks
+on:
+  push:
+  pull_request:
+jobs:
+  contracts-and-sql:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm test
+      - run: python3 scripts/verify_blueprint.py
+
+  native-occt-and-step:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned native OpenCascade binding
+        run: python -m pip install --disable-pip-version-check -e packages/cad-geometry-python
+      - name: OCCT geometry and independent STEP roundtrip tests
+        run: PYTHONPATH=packages/cad-geometry-python/src python -m unittest discover -s packages/cad-geometry-python/tests -v
+      - name: Generate real STEP + evidence report
+        run: |
+          PYTHONPATH=packages/cad-geometry-python/src python -m cad_geometry.cli run \
+            samples/precision-block.cad.json \
+            --step /tmp/precision-block.step \
+            --report /tmp/precision-block.evidence.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cad-004-005-step-evidence
+          path: |
+            /tmp/precision-block.step
+            /tmp/precision-block.evidence.json
+          if-no-files-found: error

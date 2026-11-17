@@ -1,0 +1,51 @@
+{
+  "documentId": "precision_block_001",
+  "documentRevision": 1,
+  "kernel": {
+    "binding": "cadquery-ocp",
+    "version": "7.9.3.1.1",
+    "family": "OCCT",
+    "runtime": "native"
+  },
+  "source": {
+    "valid": true,
+    "solids": 1,
+    "volume_mm3": 214492.03552627692,
+    "bbox_mm": [
+      -1e-07,
+      -1e-07,
+      -1e-07,
+      120.0000001,
+      60.0000001,
+      30.0000001
+    ]
+  },
+  "imported": {
+    "valid": true,
+    "solids": 1,
+    "volume_mm3": 214492.03552627686,
+    "bbox_mm": [
+      -1e-07,
+      -1e-07,
+      -1e-07,
+      120.0000001,
+      60.0000001,
+      30.0000001
+    ]
+  },
+  "roundTrip": {
+    "passed": true,
+    "volumeDeltaMm3": 5.820766091346741e-11,
+    "bboxMaxDeltaMm": 0.0,
+    "tolerances": {
+      "volumeAbsMm3": 0.001,
+      "bboxAbsMm": 0.0001
+    }
+  },
+  "artifact": {
+    "format": "STEP",
+    "sha256": "fa2a1eb04363a46b79be027b48259cc63b7214d8caa39184035a6aed61b4ca35",
+    "bytes": 19041,
+    "file": "precision-block.step"
+  }
+}

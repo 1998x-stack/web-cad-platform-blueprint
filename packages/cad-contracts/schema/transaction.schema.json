@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/webcad/transaction-v1.schema.json",
+  "title": "CAD Typed Transaction v1 (document-level POC)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["transactionId", "expectedRevision", "commands"],
+  "properties": {
+    "transactionId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"},
+    "expectedRevision": {"type": "integer", "minimum": 0},
+    "commands": {"type": "array", "minItems": 1, "maxItems": 64, "items": {"$ref": "#/$defs/command"}}
+  },
+  "$defs": {
+    "command": {"oneOf": [
+      {"type": "object", "additionalProperties": false, "required": ["op","name","kind","value"], "properties": {
+        "op": {"const":"parameter.set"},
+        "name": {"type":"string", "pattern":"^[A-Za-z][A-Za-z0-9_-]{0,63}$"},
+        "kind": {"enum":["length","angle","count"]},
+        "value": {"type":"number"}
+      }},
+      {"type": "object", "additionalProperties": false, "required": ["op","feature"], "properties": {
+        "op": {"const":"feature.add"},
+        "feature": {"$ref":"#/$defs/feature"}
+      }},
+      {"type": "object", "additionalProperties": false, "required": ["op","id","patch"], "properties": {
+        "op": {"const":"feature.update"},
+        "id": {"type":"string"},
+        "patch": {"type":"object", "minProperties":1}
+      }},
+      {"type": "object", "additionalProperties": false, "required": ["op","id"], "properties": {
+        "op": {"const":"feature.remove"},
+        "id": {"type":"string"}
+      }}
+    ]},
+    "feature": {
+      "type":"object", "additionalProperties":false,
+      "required":["id","type","inputs"],
+      "properties": {
+        "id":{"type":"string", "pattern":"^[A-Za-z][A-Za-z0-9_-]{0,63}$"},
+        "type":{"enum":["sketch","extrude","boolean"]},
+        "inputs":{"type":"array", "maxItems":2, "items":{"type":"string"}},
+        "plane":{"enum":["XY","XZ","YZ"]},
+        "entities":{"type":"array", "maxItems":1000},
+        "constraints":{"type":"array", "maxItems":1000},
+        "distanceMm":{"type":"number", "exclusiveMinimum":0},
+        "booleanOp":{"enum":["union","cut","intersect"]}
+      }
+    }
+  }
+}
