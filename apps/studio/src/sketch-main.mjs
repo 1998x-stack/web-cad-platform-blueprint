@@ -14,11 +14,29 @@ const cadClient=new CadWorkerClient(cadWorker,{timeoutMs:120000});
 const panel=$('sketch-solid-view'),status=$('sketch-status'),metrics=$('sketch-metrics'),indicator=$('sketch-indicator');
 const scene=new THREE.Scene();scene.background=new THREE.Color('#162235');
 const camera=new THREE.PerspectiveCamera(42,1,.1,10000);camera.up.set(0,0,1);camera.position.set(175,-205,145);camera.lookAt(70,30,15);
-const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));panel.appendChild(renderer.domElement);
+let renderer=null;
+try{
+  renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'low-power'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+  panel.appendChild(renderer.domElement);
+  state.renderBackend='webgl';
+}catch(error){
+  renderer?.dispose();renderer=null;
+  state.renderBackend='fallback';state.renderError=String(error?.message||error);
+  const note=document.createElement('div');
+  note.className='webgl-fallback';note.dataset.testid='webgl-fallback';
+  note.setAttribute('role','status');
+  note.textContent='WebGL 3D 预览不可用。二维草图、真实约束求解、精确 B-Rep 与 STEP 导出仍可用。';
+  panel.appendChild(note);
+}
 scene.add(new THREE.AmbientLight(0xffffff,1.5));const light=new THREE.DirectionalLight(0xffffff,2);light.position.set(70,-80,180);scene.add(light);
 const grid=new THREE.GridHelper(200,20,0x6984a2,0x294663);grid.rotation.x=Math.PI/2;grid.position.set(70,30,-0.1);scene.add(grid);
 function resize(){let w=panel.clientWidth,h=panel.clientHeight;if(w&&h){renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix()}}
-new ResizeObserver(resize).observe(panel);resize();function animate(){requestAnimationFrame(animate);renderer.render(scene,camera)}animate();
+if(renderer){
+  new ResizeObserver(resize).observe(panel);resize();
+  function animate(){requestAnimationFrame(animate);renderer.render(scene,camera)}
+  animate();
+}
 let mesh=null,current=null,revision=0,working=false;
 const buttons=['solve','width150','under','conflict','export'].map($);
 function busy(v){working=v;buttons.forEach(b=>b.disabled=v)}
@@ -50,11 +68,13 @@ async function run(mode='normal'){
     const built=await cadClient.build(doc);
     const geometry=await cadClient.tessellate(built.geometryId,0.1,0.5);
     if(mesh){scene.remove(mesh);mesh.geometry.dispose();mesh.material.dispose()}
-    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(geometry.positions,3));g.setAttribute('normal',new THREE.BufferAttribute(geometry.normals,3));g.setIndex(new THREE.BufferAttribute(geometry.indices,1));
-    mesh=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0x5eb4ef,metalness:.1,roughness:.55,side:THREE.DoubleSide}));scene.add(mesh);
+    if(renderer){
+      const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(geometry.positions,3));g.setAttribute('normal',new THREE.BufferAttribute(geometry.normals,3));g.setIndex(new THREE.BufferAttribute(geometry.indices,1));
+      mesh=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0x5eb4ef,metalness:.1,roughness:.55,side:THREE.DoubleSide}));scene.add(mesh);
+    }
     current=built.geometryId;state.geometry=built.evidence;state.ready=true;indicator.textContent='Sketch WASM ✓ · OCCT WASM ✓';
     metrics.textContent=JSON.stringify({solver:result.solverBuildId,status:result.status,dof:result.degreesOfFreedom,maxResidualMm:result.maxResidualMm,widthMm:doc.features[0].sizeMm[0],heightMm:doc.features[0].sizeMm[1],thicknessMm:thickness,volumeMm3:built.evidence.volumeMm3,triangleCount:geometry.triangleCount},null,2);
-    status.textContent='草图求解和精确实体构建成功';
+    status.textContent=renderer?'草图求解和精确实体构建成功':'草图求解与精确实体构建成功（无 WebGL，预览降级）';
   }catch(e){state.error=String(e);status.textContent=`错误：${e.message}`;console.error(e)}finally{busy(false)}
 }
 $('solve').onclick=()=>void run();
@@ -62,5 +82,5 @@ $('width150').onclick=()=>{$('width').value='150';void run()};
 $('under').onclick=()=>void run('under');
 $('conflict').onclick=()=>void run('conflict');
 $('export').onclick=async()=>{if(!current||working)return;busy(true);try{const bytes=await cadClient.exportStep(current);state.stepBytes=bytes.length;const url=URL.createObjectURL(new Blob([bytes],{type:'application/step'}));const a=document.createElement('a');a.href=url;a.download=`rectangle-r${revision}.step`;a.click();setTimeout(()=>URL.revokeObjectURL(url),10_000);status.textContent=`已导出 ${bytes.length} 字节 STEP`}catch(e){state.error=String(e);status.textContent=e.message}finally{busy(false)}};
-window.addEventListener('pagehide',()=>{sketchClient.close();cadClient.close();renderer.dispose()});
+window.addEventListener('pagehide',()=>{sketchClient.close();cadClient.close();renderer?.dispose()});
 (async()=>{try{await cadClient.initialize();await run()}catch(e){state.error=String(e);status.textContent=e.message;console.error(e);busy(false)}})();
