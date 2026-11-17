@@ -1,0 +1,7 @@
+{
+  "documentId": "demo_part",
+  "expectedRevision": 1,
+  "operations": [
+    {"op": "parameter.set", "name": "length", "kind": "length", "value": 150}
+  ]
+}

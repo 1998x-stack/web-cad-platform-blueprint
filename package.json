@@ -1,0 +1,20 @@
+{
+  "name": "web-cad-platform-blueprint",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Architecture blueprint + typed CAD command engine + native OCCT/STEP geometry reference spike",
+  "scripts": {
+    "test": "node --test packages/cad-core/test/*.test.mjs",
+    "check:docs": "python3 scripts/verify_blueprint.py",
+    "check": "npm test && npm run check:docs",
+    "test:geometry": "PYTHONPATH=packages/cad-geometry-python/src python3 -m unittest discover -s packages/cad-geometry-python/tests -v",
+    "check:geometry": "npm run test:geometry"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

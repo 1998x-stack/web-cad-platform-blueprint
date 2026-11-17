@@ -1,0 +1,48 @@
+﻿id,phase,title,depends_on,acceptance,status
+CAD-001,P0,技术/许可证矩阵,,版本+许可证+替代方案,planned
+CAD-002,P0,Canonical Document Schema,CAD-001,schema 验证和版本兼容,planned
+CAD-003,P0,CommandEngine 原子事务,CAD-002,revision+DAG+rollback 单测,planned
+CAD-004,P0,OCCT WASM Worker,CAD-001,真实 B-Rep 和体积校验,partial-native-oracle
+CAD-005,P0,STEP Round-trip,CAD-004,精确回读并比较 bbox/volume,spike-passed
+CAD-006,P0,Sketch Solver Spike,CAD-001,约束诊断通过,planned
+CAD-007,P0,内存与浏览器基准,CAD-004,记录设备、包体积、100 次构建,planned
+CAD-008,P0,ADR 与 Go/No-go,CAD-001;CAD-002;CAD-003;CAD-004;CAD-005;CAD-006;CAD-007,风险评审完成,planned
+STORE-001,P1,SQLite 元数据迁移,CAD-002,FK+FTS5+索引测试,planned
+STORE-002,P1,内容对象存储与下载,STORE-001,hash一致且ACL成功,planned
+STORE-003,P1,浏览检索分类,STORE-001,10k索引检索通过,planned
+STORE-004,P1,GLB Three.js Viewer,CAD-001,相机/拾取/内存释放,planned
+STORE-005,P1,模型详情与版本,STORE-002;STORE-003;STORE-004,许可/格式/能力可见,planned
+STORE-006,P1,复制引用与导入工程,STORE-005,固定Release引用,planned
+STORE-007,P1,模型上传发布流水线,STORE-005,内容检查+不可变版本,planned
+CAD-101,P2,Studio 工作台,CAD-003,状态机与快捷键,planned
+CAD-102,P2,草图绘制与捕捉,CAD-006,端点吸附和坐标,planned
+CAD-103,P2,求解器集成,CAD-102,约束诊断,planned
+CAD-104,P2,Extrude/Cut/Union,CAD-004;CAD-103,B-Rep几何证据,planned
+CAD-105,P2,特征图与参数重建,CAD-003;CAD-104,局部增量重建,planned
+CAD-106,P2,拓扑持久引用,CAD-104,歧义Fail-closed,planned
+CAD-107,P2,本地自动保存,CAD-105,刷新恢复,planned
+CAD-108,P2,CAD E2E,CAD-101;CAD-107,草图到导出完整路径,planned
+IO-001,P3,格式能力Registry,CAD-005,显示损失信息,planned
+IO-002,P3,STEP 导入导出,CAD-005;CAD-105,Round-trip有效,planned
+IO-003,P3,STL/GLB 导出,CAD-104,文件格式与Mesh验证,planned
+IO-004,P3,转换任务与取消,STORE-002,状态机/限额/幂等,planned
+IO-005,P3,来源追溯 Manifest,IO-002;IO-004,sourceRevision和hash记录,planned
+IO-006,P3,导出回归测试集,IO-003;IO-005,含失败样本,planned
+ENG-001,P4,装配定义模型,CAD-105,不可变Release引用,planned
+ENG-002,P4,装配变换/约束,ENG-001,姿态可重建,planned
+ENG-003,P4,BOM 数量与版本,ENG-001,组件数与清单一致,planned
+ENG-004,P4,工程图投影与标注,CAD-104,精确投影,planned
+ENG-005,P4,2D 出图格式,ENG-004,SVG/PDF/DXF子集验证,planned
+AGENT-001,P5,统一命令 REST,CAD-105,统一领域校验,planned
+AGENT-002,P5,MCP 查询工具,AGENT-001,协议互操作+ACL,planned
+AGENT-003,P5,Detached Preview,AGENT-001,无副作用+几何证据,planned
+AGENT-004,P5,审批与CAS提交,AGENT-003,过期权限/修订拒绝,planned
+AGENT-005,P5,MCP 导出任务,AGENT-004;IO-004,关联产物 revision,planned
+AGENT-006,P5,审计/安全回归,AGENT-004,未授权提交数0,planned
+TEAM-001,P6,团队权限,AGENT-006,租户隔离,planned
+TEAM-002,P6,多租户审计,TEAM-001,边界审查,planned
+TEAM-003,P6,云几何 Worker,IO-004,限额和等价内核,planned
+TEAM-004,P6,协作版本管理,TEAM-001;CAD-105,冲突恢复,planned
+MARKET-001,P6,付费模型授权交易,STORE-007;TEAM-001,支付/许可/退款完整合规,planned
+OBS-001,P6,SLO/监控,TEAM-003,真实指标报告,planned
+LEGAL-001,P6,版权与下架流程,STORE-007,授权审核和申诉流程,planned
