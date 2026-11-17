@@ -14,7 +14,7 @@ test('real WASM worker: build, compare native, mesh, STEP roundtrip, parametric 
     const init=await client.initialize();assert.equal(init.runtime,'WASM');
     const out=await client.build(base);assert.equal(out.evidence.valid,true);assert.equal(out.evidence.solidCount,1);
     closeEnough(out.evidence.volumeMm3,reference.source.volume_mm3,1e-3,'volume mm3');
-    closeEnough(out.evidence.surfaceAreaMm2,reference.source.area_mm2,1e-3,'area mm2');
+    closeEnough(out.evidence.surfaceAreaMm2,2*(120*60+120*30+60*30)-2*Math.PI*4*4+2*Math.PI*4*30,1e-3,'analytical surface area mm2');
     for(let i=0;i<6;i++)closeEnough(out.evidence.bboxMm[i],reference.source.bbox_mm[i],1e-4,`bbox[${i}]`);
     const mesh=await client.tessellate(out.geometryId);assert.ok(mesh.indices.length>12);assert.equal(mesh.sourceDocumentRevision,base.revision);
     const bytes=await client.exportStep(out.geometryId);if(process.env.WASM_STEP_OUTPUT)writeFileSync(process.env.WASM_STEP_OUTPUT,bytes);assert.match(new TextDecoder().decode(bytes).slice(0,200),'ISO-10303-21');
