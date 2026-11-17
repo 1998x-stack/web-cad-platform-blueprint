@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sketchId": "ConcaveSketch",
+  "revision": 1,
+  "units": "mm",
+  "plane": "XY",
+  "points": [
+    {
+      "id": "P0",
+      "x": 0.0,
+      "y": 0.0,
+      "fixed": true
+    },
+    {
+      "id": "P1",
+      "x": 100.0,
+      "y": 0.0,
+      "fixed": true
+    },
+    {
+      "id": "P2",
+      "x": 100.0,
+      "y": 40.0,
+      "fixed": true
+    },
+    {
+      "id": "P3",
+      "x": 40.0,
+      "y": 40.0,
+      "fixed": true
+    },
+    {
+      "id": "P4",
+      "x": 40.0,
+      "y": 80.0,
+      "fixed": true
+    },
+    {
+      "id": "P5",
+      "x": 0.0,
+      "y": 80.0,
+      "fixed": true
+    }
+  ],
+  "lines": [
+    {
+      "id": "L0",
+      "start": "P0",
+      "end": "P1"
+    },
+    {
+      "id": "L1",
+      "start": "P1",
+      "end": "P2"
+    },
+    {
+      "id": "L2",
+      "start": "P2",
+      "end": "P3"
+    },
+    {
+      "id": "L3",
+      "start": "P3",
+      "end": "P4"
+    },
+    {
+      "id": "L4",
+      "start": "P4",
+      "end": "P5"
+    },
+    {
+      "id": "L5",
+      "start": "P5",
+      "end": "P0"
+    }
+  ],
+  "circles": [],
+  "constraints": []
+}

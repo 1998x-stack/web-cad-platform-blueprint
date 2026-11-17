@@ -20,7 +20,8 @@ export type CylinderFeature = {
   id: FeatureId; type:'cylinder'; inputs:[]; originMm:[number,number,number];
   radiusMm:LengthScalar; heightMm:LengthScalar; axis:'Z';
 };
-export type CadFeature = SketchFeature | ExtrudeFeature | BooleanFeature | BoxFeature | CylinderFeature;
+export type ProfileFeature = {id:FeatureId; type:'profile'; inputs:[]; plane:'XY'; sourceSketchId:string; sourceSketchRevision:number; pointsMm:[number,number][]};
+export type CadFeature = SketchFeature | ProfileFeature | ExtrudeFeature | BooleanFeature | BoxFeature | CylinderFeature;
 export interface CadDocumentV1 {
   schemaVersion:1; documentId:string; revision:number; units:CadUnit;
   parameters:Record<string,Parameter>; features:CadFeature[]; outputBodyId?:FeatureId;

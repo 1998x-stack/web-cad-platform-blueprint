@@ -20,7 +20,10 @@
     "test:browser": "node scripts/test_browser.mjs",
     "test:sketch-unit": "node --test packages/cad-sketch/test/validation.test.mjs",
     "test:sketch-wasm": "node --test packages/cad-sketch/test/real-planegcs.test.mjs",
-    "test:sketch-browser": "node scripts/test_sketch_browser.mjs"
+    "test:sketch-browser": "node scripts/test_sketch_browser.mjs",
+    "test:profile-unit": "node --test packages/cad-sketch/test/profile.test.mjs packages/cad-core/test/local-history.test.mjs packages/cad-geometry/test/profile-evaluator.test.mjs",
+    "test:profile-wasm": "node --test packages/cad-geometry/test/profile-wasm.test.mjs",
+    "test:profile-browser": "node scripts/test_profile_browser.mjs"
   },
   "engines": {
     "node": ">=20"

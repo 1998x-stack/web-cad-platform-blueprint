@@ -17,15 +17,16 @@ parameter=obj({'kind':{'enum':['length','angle','count']},'value':{'type':'numbe
 parameter['allOf']=[{'if':{'properties':{'kind':{'const':'length'}}},'then':{'properties':{'value':{'exclusiveMinimum':0}}}}, {'if':{'properties':{'kind':{'const':'count'}}},'then':{'properties':{'value':{'type':'integer','minimum':0}}}}]
 
 def feature(kind, props, required):
-  return obj({'id':ref('id'),'type':{'const':kind},'inputs':({'type':'array','minItems':0,'maxItems':0} if kind in ('sketch','box','cylinder') else {'type':'array','minItems':1 if kind=='extrude' else 2,'maxItems':1 if kind=='extrude' else 2,'items':ref('id')}),**props},['id','type','inputs',*required])
+  return obj({'id':ref('id'),'type':{'const':kind},'inputs':({'type':'array','minItems':0,'maxItems':0} if kind in ('sketch','profile','box','cylinder') else {'type':'array','minItems':1 if kind=='extrude' else 2,'maxItems':1 if kind=='extrude' else 2,'items':ref('id')}),**props},['id','type','inputs',*required])
 feats=[
  feature('box',{'originMm':ref('vector3'),'sizeMm':ref('lengthVector3')},['originMm','sizeMm']),
  feature('cylinder',{'originMm':ref('vector3'),'radiusMm':ref('lengthScalar'),'heightMm':ref('lengthScalar'),'axis':{'const':'Z'}},['originMm','radiusMm','heightMm','axis']),
  feature('boolean',{'booleanOp':{'enum':['cut','union','intersect']}},['booleanOp']),
  feature('extrude',{'distanceMm':ref('lengthScalar')},['distanceMm']),
+ feature('profile',{'plane':{'const':'XY'},'sourceSketchId':ref('id'),'sourceSketchRevision':{'type':'integer','minimum':0},'pointsMm':{'type':'array','minItems':3,'maxItems':128,'items':{'type':'array','minItems':2,'maxItems':2,'items':{'type':'number'}}}},['plane','sourceSketchId','sourceSketchRevision','pointsMm']),
  feature('sketch',{'plane':{'enum':['XY','XZ','YZ']},'entities':{'type':'array','maxItems':1000},'constraints':{'type':'array','maxItems':1000}},['plane','entities','constraints'])
 ]
-patch=obj({'inputs':inputs,'plane':{'enum':['XY','XZ','YZ']},'entities':{'type':'array','maxItems':1000},'constraints':{'type':'array','maxItems':1000},'distanceMm':ref('lengthScalar'),'booleanOp':{'enum':['cut','union','intersect']},'originMm':ref('vector3'),'sizeMm':ref('lengthVector3'),'radiusMm':ref('lengthScalar'),'heightMm':ref('lengthScalar'),'axis':{'const':'Z'}},[]);patch['minProperties']=1
+patch=obj({'inputs':inputs,'plane':{'enum':['XY','XZ','YZ']},'entities':{'type':'array','maxItems':1000},'constraints':{'type':'array','maxItems':1000},'distanceMm':ref('lengthScalar'),'booleanOp':{'enum':['cut','union','intersect']},'originMm':ref('vector3'),'sizeMm':ref('lengthVector3'),'radiusMm':ref('lengthScalar'),'heightMm':ref('lengthScalar'),'axis':{'const':'Z'},'pointsMm':{'type':'array','minItems':3,'maxItems':128,'items':{'type':'array','minItems':2,'maxItems':2,'items':{'type':'number'}}},'sourceSketchId':ref('id'),'sourceSketchRevision':{'type':'integer','minimum':0}},[]);patch['minProperties']=1
 commands=[
  dict(obj({'op':{'const':'parameter.set'},'name':ref('id'),'kind':{'enum':['length','angle','count']},'value':{'type':'number'}},['op','name','kind','value']), allOf=parameter['allOf']),
  obj({'op':{'const':'feature.add'},'feature':ref('feature')},['op','feature']),

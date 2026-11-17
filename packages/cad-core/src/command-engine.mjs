@@ -17,7 +17,7 @@ export class CadDomainError extends Error {
 
 const ID = /^[A-Za-z][A-Za-z0-9_-]{0,63}$/;
 const PLANES = new Set(['XY', 'XZ', 'YZ']);
-const TYPES = new Set(['sketch', 'extrude', 'boolean', 'box', 'cylinder']);
+const TYPES = new Set(['sketch', 'extrude', 'boolean', 'box', 'cylinder', 'profile']);
 const OPS = new Set(['union', 'cut', 'intersect']);
 const KINDS = new Set(['length', 'angle', 'count']);
 function assertVector3(value, label, positive = false, params = {}) {
@@ -81,7 +81,7 @@ function assertLengthScalar(value, label, parameters) {
 
 function validateFeature(feature, parameters) {
   assertPlainObject(feature, 'feature');
-  assertAllowedKeys(feature, ['id', 'type', 'inputs', 'plane', 'entities', 'constraints', 'distanceMm', 'booleanOp', 'originMm', 'sizeMm', 'radiusMm', 'heightMm', 'axis'], 'feature');
+  assertAllowedKeys(feature, ['id', 'type', 'inputs', 'plane', 'entities', 'constraints', 'distanceMm', 'booleanOp', 'originMm', 'sizeMm', 'radiusMm', 'heightMm', 'axis', 'pointsMm', 'sourceSketchId', 'sourceSketchRevision'], 'feature');
   assertId(feature.id, 'feature.id');
   if (!TYPES.has(feature.type)) error('INVALID_INPUT', 'unsupported feature type');
   if (!Array.isArray(feature.inputs) || feature.inputs.length > 2 || !feature.inputs.every(validId)) {
@@ -105,6 +105,14 @@ function validateFeature(feature, parameters) {
     }
     // NOTE: geometry / constraint payload validation is intentionally NOT implemented here.
     if (JSON.stringify({entities:feature.entities,constraints:feature.constraints}).length > 65536) error('INVALID_INPUT', 'sketch payload too large');
+  }
+  if (feature.type === 'profile') {
+    if (feature.inputs.length !== 0 || feature.plane !== 'XY') error('INVALID_INPUT', 'profile needs XY and no inputs');
+    assertId(feature.sourceSketchId,'profile.sourceSketchId');
+    if (!Number.isSafeInteger(feature.sourceSketchRevision) || feature.sourceSketchRevision < 0) error('INVALID_INPUT', 'invalid sketch revision');
+    if (!Array.isArray(feature.pointsMm) || feature.pointsMm.length < 3 || feature.pointsMm.length > 128) error('INVALID_INPUT', 'invalid profile point count');
+    for (const p of feature.pointsMm) { if (!Array.isArray(p) || p.length !== 2) error('INVALID_INPUT', 'profile point must be XY'); for (const c of p) { assertFinite(c,'profile coordinate'); if (Math.abs(c)>1e6) error('INVALID_INPUT','profile coordinate outside bounds'); } }
+    // Geometric self-intersections are validated again at B-Rep execution boundary.
   }
   if (feature.type === 'extrude') {
     if (feature.inputs.length !== 1) error('INVALID_INPUT', 'extrude needs one sketch input');
@@ -139,7 +147,7 @@ export function validateDocument(doc) {
     for (const dep of f.inputs) {
       const input = nodes.get(dep);
       if (!input) error('MISSING_DEPENDENCY', `feature ${f.id} depends on nonexistent ${dep}`);
-      if (f.type === 'extrude' && input.type !== 'sketch') error('INVALID_DEPENDENCY', 'extrude needs a sketch');
+      if (f.type === 'extrude' && !['sketch','profile'].includes(input.type)) error('INVALID_DEPENDENCY', 'extrude needs a sketch or solved profile');
       if (f.type === 'boolean' && !['extrude','boolean','box','cylinder'].includes(input.type)) error('INVALID_DEPENDENCY', 'boolean needs solid-producing inputs');
     }
   }
@@ -165,7 +173,7 @@ function updateFeature(doc, command) {
   assertId(command.id,'feature.update id');
   assertPlainObject(command.patch,'feature.update patch');
   if (Object.keys(command.patch).length === 0) error('INVALID_INPUT', 'empty update');
-  assertAllowedKeys(command.patch, ['inputs','plane','entities','constraints','distanceMm','booleanOp','originMm','sizeMm','radiusMm','heightMm','axis'], 'feature patch');
+  assertAllowedKeys(command.patch, ['inputs','plane','entities','constraints','distanceMm','booleanOp','originMm','sizeMm','radiusMm','heightMm','axis','pointsMm','sourceSketchId','sourceSketchRevision'], 'feature patch');
   const index = doc.features.findIndex(f => f.id === command.id);
   if (index < 0) error('NOT_FOUND','feature not found');
   doc.features[index] = {...doc.features[index], ...clone(command.patch)};
