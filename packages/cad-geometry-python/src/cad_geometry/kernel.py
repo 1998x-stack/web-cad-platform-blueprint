@@ -138,6 +138,11 @@ def evidence(shape) -> Evidence:
         face_explorer.Next()
     bounds = Bnd_Box()
     BRepBndLib.Add_s(shape, bounds, True)
+    # A parse-corrupt or empty shape can yield a void bounding box; OCCT would then raise an
+    # untyped Standard_Failure from Get(). Convert it to a deterministic fail-closed error so a
+    # malformed STEP never escapes as an uncaught kernel exception (see negative-case tests).
+    if bounds.IsVoid():
+        raise GeometryError("shape has no bounding box (empty or invalid topology)")
     bb = bounds.Get()
     return Evidence(valid, count, float(props.Mass()), tuple(float(x) for x in bb), float(area.Mass()),face_count)
 

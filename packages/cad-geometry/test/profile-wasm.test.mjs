@@ -1,5 +1,5 @@
 /** Real planegcs 1.3.0 + OCCT 5.17.2 in WASM; checks volumes not fake kernel calls. */
-import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';
+import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';import {join} from 'node:path';import {createHash} from 'node:crypto';
 import {Worker} from 'node:worker_threads';import {CadWorkerClient} from '../src/client.mjs';
 import {createPlanegcsSolver} from '../../cad-sketch/src/planegcs.mjs';
 import {solveSketch} from '../../cad-sketch/src/solver.mjs';
@@ -17,6 +17,18 @@ test('real WASM profile: triangle, rotated rectangle, concave L exact volumes + 
    assert.equal(result.evidence.solidCount,1);assert.ok(Math.abs(result.evidence.volumeMm3-expected)<0.001,`${name}: ${result.evidence.volumeMm3}, expected ${expected}`);
    const tess=await client.tessellate(result.geometryId);assert.ok(tess.triangleCount>0);
    const step=await client.exportStep(result.geometryId);assert.match(new TextDecoder().decode(step).slice(0,80),/ISO-10303-21/);
+   // Optional: persist real WASM STEP bytes for an independent native OCP re-import (see
+   // scripts/verify_profile_steps_with_native.py). Raw STEP stays out of Git by default.
+   if(process.env.PROFILE_STEP_OUTPUT_DIR){
+     const bytes=Buffer.from(step);mkdirSync(process.env.PROFILE_STEP_OUTPUT_DIR,{recursive:true});
+     writeFileSync(join(process.env.PROFILE_STEP_OUTPUT_DIR,`${name}.step`),bytes);
+     writeFileSync(join(process.env.PROFILE_STEP_OUTPUT_DIR,`${name}.evidence.json`),JSON.stringify({
+       schemaVersion:1,profile:name,kernelBuildId:'occt-wasm-5.17.2',sketchId:sketch.sketchId,
+       documentId:doc.documentId,documentRevision:doc.revision,
+       pointsMm:doc.features[0].pointsMm,extrusionDepthMm:h,expectedVolumeMm3:expected,
+       wasmEvidence:result.evidence,
+       step:{file:`${name}.step`,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')}},null,2));
+   }
    await client.dispose(result.geometryId);
   }
  }finally{client.close()}

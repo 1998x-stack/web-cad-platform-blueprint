@@ -17,3 +17,17 @@ test('reject multiple contours, open loops, stale and undersolved',()=>{
  const under=solution(fresh);under.status='underconstrained';assert.throws(()=>extractClosedProfile(fresh,under),/current fully/);
 });
 test('reject concave overlaps and repeated boundary contact',()=>{assert.throws(()=>validateClosedProfile([[0,0],[5,0],[5,5],[3,5],[3,2],[0,2],[0,3],[4,3],[4,4],[0,4]]),/intersect/)});
+test('raw profile validation preserves winding sign and near-degenerate area fails closed',()=>{
+  const clockwise=[[0,0],[0,4],[4,4],[4,0]];
+  const raw=validateClosedProfile(clockwise);
+  assert.ok(raw.signedAreaMm2<0,'raw validation must report the signed (here negative) area');
+  assert.ok(Math.abs(raw.areaMm2-16)<1e-9);
+  // The derived CAD profile is always normalised to CCW for a stable B-Rep face orientation.
+  for(const name of ['triangle','rotated','concave']){
+    const s=sample(name);const doc=solvedProfileToCadDocument(s,solution(s),10);
+    const area=doc.features[0].pointsMm.reduce((a,p,i,arr)=>{const q=arr[(i+1)%arr.length];return a+p[0]*q[1]-p[1]*q[0];},0)/2;
+    assert.ok(area>0,`${name}: derived profile must be CCW`);
+  }
+  // A sub-1e-8 mm^2 sliver must fail closed instead of building a degenerate face.
+  assert.throws(()=>validateClosedProfile([[0,0],[4,0],[4,1e-9],[0,1e-9]]),/degenerate|zero-length|intersect/i);
+});

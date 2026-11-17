@@ -40,6 +40,22 @@ class GeometryTests(unittest.TestCase):
                                120 * 60 * 30 - math.pi * 6**2 * 30,
                                delta=1e-3)
 
+    def test_malformed_step_fails_closed_without_uncaught_kernel_error(self):
+        # Regression: a parse-corrupt STEP used to escape import_step as an uncaught
+        # OCP Standard_Failure ("Bnd_Box is void") instead of a typed GeometryError.
+        shape = build(FIXTURE)
+        with tempfile.TemporaryDirectory() as work:
+            content = export_step(shape, Path(work) / "genuine.step")
+            truncated = Path(work) / "truncated.step"
+            truncated.write_bytes(content[: max(40, len(content) // 3)])
+            corrupt = Path(work) / "corrupt.step"
+            corrupt.write_text(content.decode().replace("CARTESIAN_POINT", "NOT_A_KEYWORD"))
+            empty = Path(work) / "empty.step"
+            empty.write_bytes(b"")
+            for bad in (truncated, corrupt, empty):
+                with self.assertRaises(GeometryError, msg=f"{bad.name} must fail closed"):
+                    import_step(bad)
+
     def test_step_file_roundtrip_is_read_from_disk(self):
         shape = build(FIXTURE)
         with tempfile.TemporaryDirectory() as work:
