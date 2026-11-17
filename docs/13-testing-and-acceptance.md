@@ -67,3 +67,15 @@ python3 scripts/verify_blueprint.py
 ```
 
 这些仅覆盖**随包的概念引擎/SQL**，不能替代真实 CAD 几何、浏览器 E2E 和生产 MCP 的测试。
+
+## 13.8 2026-11-17 Review 发现的必要新门禁
+
+- **Schema parity**：`box/cylinder` 被 TS、JSON Schema、Python 校验器等价接受；无效 fixtures 三端一致拒绝。
+- **DAG parity**：同一份乱序特征文档，所有运行时对 `outputBodyId` 采用一致的稳定拓扑执行语义。
+- **参数驱动**：只做 `parameter.set`，数值几何结果必须改变；不能以手工改 `radiusMm` 假装参数化完成。
+- **P1 publication invariant**：`model_releases` 的发布清单和 `release_assets` membership 一起不可变，签名 URL 严格授权。
+- **中文搜索**：部分词中文召回有固定 fixture，不允许仅测英文全词命中。
+- **Browser CI**：真实 Worker/WASM、STEP 回读、连续释放、generation 竞争与 Safari/WebKit 兼容证据。
+- **P2 E2E**：草图约束→精确实体→参数重建→保存恢复→STEP 独立回读；截图只作辅助证据。
+
+精确执行表、门禁与建议仓库布局详见 [22｜Contract Freeze](22-contract-freeze-and-verification.md)。

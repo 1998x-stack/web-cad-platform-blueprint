@@ -35,3 +35,10 @@ Date / Owner / Status
 **ADR-006**：AI/人类操作必须通过同一个 command service，否则审批与撤销语义不一致；支持 detached preview、revision CAS 和审计。
 
 **ADR-008**：从发布初期就把公开演示站与正式业务服务分离，避免将静态页面误当作可运营的 Model Store 或 MCP 后端。
+
+## 已创建的具体 ADR 文件
+
+- [0001｜Native OCCT reference → browser WASM](0001-native-occt-reference-then-wasm.md)：P0 Native Spike 已采纳。
+- [0002｜Contract parity & phase gates](0002-contract-parity-and-phase-gates.md)：当前为 Proposed，待实现与浏览器证据后才能标为 Accepted。
+
+上表 `ADR-001`…`ADR-009` 是原蓝图的**主题编号**，并非已落实的文件编号或已经完成的决定。实际审计和状态以 `0001`、`0002` 等决策文件为准。

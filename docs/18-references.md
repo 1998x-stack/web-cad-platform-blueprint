@@ -33,3 +33,15 @@
 - 对 3 个真实几何 fixture 记录实体有效性、体积、bbox、STEP round-trip。
 - 对 Chrome / Safari / Firefox 的 Worker + WASM 兼容记录。
 - 对 P0 重点技术决策建立 ADR 与可复现回归命令。
+
+## 2026-11-17 P0–P2 Review 补充核验来源
+
+> 只说明选型依据，不表示依赖包已在本仓库装入浏览器运行；版本和许可证须在实施 PR 锁定。
+
+- [OpenCascade.js：关于项目、WASM 与 beta 文档状态](https://ocjs.org/docs/about)：文档页面针对 beta，P0 必须实测 API/包版本，不可用 README 推定已支持。
+- [OpenCascade.js：Custom Builds](https://ocjs.org/docs/app-dev-workflow/custom-builds)：按实际 API 需要裁剪绑定，减小包体积。
+- [OpenCascade.js：单线程与多线程介绍](https://ocjs.org/docs/advanced/multi-threading/intro)：默认单线程 WASM；多线程涉及 SharedArrayBuffer/跨源隔离。
+- [replicad 作为 library 使用](https://github.com/sgenoud/replicad/blob/main/packages/replicad-docs/docs/use-as-a-library.md)：建议把几何运算放入 Web Worker，显示使用 Three.js helper。
+- [planegcs README](https://github.com/Salusoft89/planegcs/blob/main/README.md)：WebAssembly 约束求解器、约束种类、残差/数值迭代能力，需要独立 Spike。
+- [MDN：Cross-Origin-Embedder-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Embedder-Policy)：跨源隔离与 SharedArrayBuffer 必要前提。
+- [MCP 2026-07-28 正式发布说明](https://blog.modelcontextprotocol.io/posts/2026-07-28/)：P5 远程 Agent 需按最新无协议会话与授权规范构建；P0–P2 暂不实现生产 MCP Server。

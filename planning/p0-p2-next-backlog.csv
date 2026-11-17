@@ -1,0 +1,30 @@
+id,phase,milestone,priority,source_task,title,depends_on,deliverable,acceptance,estimate_person_days,state
+NEXT-001,P0,M0,blocker,CAD-002,Canonical Document and transaction schema freeze,,Document/Transaction/Worker/Evidence JSON schemas,valid/invalid golden fixtures accepted identically TS Python Browser,3,planned
+NEXT-002,P0,M0,blocker,CAD-003,Deterministic feature DAG evaluation,NEXT-001,stable sort and explicit outputBodyId,reverse order fixture accepted or rejected identically across runtimes,3,planned
+NEXT-003,P0,M0,blocker,CAD-002,Typed scalar/parameter reference,NEXT-001,parameter binding and unit policy,parameter.set hole 8 to 12 changes BRep volume in native/wasm,4,planned
+NEXT-004,P0,M0,blocker,CAD-004,Unify geometry evidence and error codes,NEXT-001,GeometryEvidenceV1 and codegen adapters,one serialized shape report and negative errors across runtimes,2,planned
+NEXT-005,P0,M1,high,CAD-001,Compare WASM kernel candidates,NEXT-004,license/version/API/bundle matrix ADR,real wasm build chosen with testable STEP+boolean+mesh APIs,3,planned
+NEXT-006,P0,M1,blocker,CAD-004,Dedicated Worker OCCT WASM initialization,NEXT-005,worker lifecycle boot and error message,Chrome/Firefox/WebKit smoke invokes actual wasm no main thread block,4,planned
+NEXT-007,P0,M1,blocker,CAD-004,BRep primitives/boolean/mesh in Worker,NEXT-006;NEXT-002;NEXT-003,precision-block build and tessellation,valid solid and native comparison + three.js render proof,5,planned
+NEXT-008,P0,M2,blocker,CAD-005,Browser STEP export and independent import,NEXT-007,STEP report and genuine files,volume/bbox/validity pass with fixed tolerances; malformed input rejected,4,planned
+NEXT-009,P0,M2,high,CAD-006,Planegcs 2D constraints spike,NEXT-001;NEXT-005,solver adapter prototype,under/fully/over constrained fixtures and residuals,4,planned
+NEXT-010,P0,M2,high,CAD-007,100-cycle browser lifecycle and perf,NEXT-007,retained memory and browser matrix reports,no unbounded growth; 3 browsers and environment recorded,3,planned
+NEXT-011,P0,M2,blocker,CAD-008,P0 Gate G0 review,NEXT-008;NEXT-009;NEXT-010,signed go/no-go ADR and CI evidence index,all mandatory G0 checks PASS or documented NO-GO,2,planned
+NEXT-012,P1,M3,high,STORE-001,Release aggregate and immutable membership,NEXT-001,SQLite migration plus release service invariant,published release_assets cannot be modified; new version succeeds,4,planned
+NEXT-013,P1,M3,high,STORE-002,Content-addressed private object storage,NEXT-012,blob adapter manifests and checksums,hash bytes verified; unauthorized access rejected,4,planned
+NEXT-014,P1,M3,high,STORE-003,Chinese model search spike,NEXT-012,tokenization index and benchmark,机械 matches 参数化机械零件; recall and latency report,3,planned
+NEXT-015,P1,M3,high,STORE-003,Catalog API with stable pagination and ACL,NEXT-012;NEXT-014,REST list detail and release manifest,10k rows stable cursor; private listings invisible,4,planned
+NEXT-016,P1,M3,high,STORE-004,Three.js GLB viewer,NEXT-004,viewer load unload and error handling,20 models/malformed files cycle; no stale GPU content,4,planned
+NEXT-017,P1,M4,high,STORE-007,Safe upload/validate/publish pipeline,NEXT-013;NEXT-015,quarantine and release publisher,untrusted files cannot publish bypass checks,5,planned
+NEXT-018,P1,M4,high,STORE-005,Model details/version/licensing UI,NEXT-015;NEXT-016,model detail and release picker,capability source and license accurately shown,3,planned
+NEXT-019,P1,M4,high,STORE-006,Immutable reference and authorized download,NEXT-017;NEXT-018,copy cad URI/download verified asset,manifest SHA equals downloaded SHA; ACL fail closed,3,planned
+NEXT-020,P1,M4,blocker,STORE-007,P1 Gate G1 end-to-end,NEXT-019,browser E2E + search/security/perf reports,find-preview-copy-download 100 percent fixture success,2,planned
+NEXT-021,P2,M5,high,CAD-101,Studio shell and tool state machine,NEXT-011,feature tree/viewport/ribbon/commands,escape undo and selection states tested,4,planned
+NEXT-022,P2,M5,high,CAD-102,Typed sketch primitives and snapping,NEXT-009;NEXT-021,line circle rectangle entities and canvas,mm coordinate and entity reference stable,5,planned
+NEXT-023,P2,M5,blocker,CAD-103,Sketch solver adapter integration,NEXT-022,solver result and constraint UI,under fully over constrained and conflicts shown,5,planned
+NEXT-024,P2,M5,blocker,CAD-104,Sketch profile to precise Extrude and Cut,NEXT-023;NEXT-007,profile converter and exact features,invalid profile rejected and valid volume matches oracle,6,planned
+NEXT-025,P2,M6,blocker,CAD-105,Parameter-driven incremental rebuild,NEXT-024;NEXT-003,feature closure cache and typed parameter updates,8 to 12 hole changes volume only impacted nodes rebuild,5,planned
+NEXT-026,P2,M6,high,CAD-106,Fail-closed topology face references,NEXT-024,pick mapping and ambiguity UX,no silent wrong-face selection after rebuild,4,planned
+NEXT-027,P2,M6,high,CAD-107,IndexedDB autosave and recovery,NEXT-021;NEXT-025,version snapshots restore and migration,refresh crash interruption preserves last valid revision,4,planned
+NEXT-028,P2,M6,high,STORE-006,Open immutable release inside Studio,NEXT-019;NEXT-024,import versioned reference action,source release manifest provenance preserved,3,planned
+NEXT-029,P2,M6,blocker,CAD-108,P2 Gate G2 browser vertical slice,NEXT-025;NEXT-026;NEXT-027;NEXT-028;NEXT-008,E2E sketch to reloaded STEP report,rebuild/undo/redo/reopen/export verified in browser,5,planned

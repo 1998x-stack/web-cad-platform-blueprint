@@ -11,6 +11,20 @@
 
 **当前状态：** 使用原生 OCCT 完成几何构建、校验与 STEP 往返；浏览器 WASM Worker 尚未实现，不能把本参考内核称为完整 Web CAD。
 
+
+## 下一阶段工程 Review 与 P0–P2 计划（2026-11-17）
+
+> 当前 `main` 的 12 项 JS / 11 项 Python 测试通过，但不代表浏览器 WASM、完整商店或参数化 Studio 已完成。Review 发现 Schema 漂移、JS/native DAG 语义不一致、参数不驱动几何、发布资产 membership 可变和中文检索问题；这些是后续实施的核心阻断项。
+
+- [20｜工程级 Review 与缺口](docs/20-deep-review-and-gaps.md)：已复现问题、风险与优先级。
+- [21｜下一阶段 P0–P2 核心里程碑](docs/21-next-milestones-p0-p2.md)：M0–M6、G0/G1/G2、依赖、排期与验收。
+- [22｜Contract Freeze 与测试矩阵](docs/22-contract-freeze-and-verification.md)：文档/Worker/Kernel/STEP 的一致性协议。
+- [23｜P1 Model Library 实施设计](docs/23-model-store-p1-plan.md)：Release 不可变性、中文搜索、资产校验、ACL、Gallery。
+- [24｜P2 Parametric Studio 实施设计](docs/24-parametric-studio-p2-plan.md)：草图约束、特征树、参数化重建、恢复和导出。
+- [下一阶段任务拆解 CSV](planning/p0-p2-next-backlog.csv)：按 Gate 与依赖排序。
+
+**第一项实施 PR 应是 Schema/执行语义收敛，而不是直接扩展 UI。** 原有 P0–P6 目录是阶段蓝图，更新后的 Go/No-Go 以 [21](docs/21-next-milestones-p0-p2.md) 为准。
+
 ## 项目目标
 
 构建以 **精确 B-Rep CAD + 参数化历史** 为底座、以 **3D 模型资产市场** 为入口、以 **标准化导出** 和 **MCP Agent** 为扩展的 Web CAD 平台。
