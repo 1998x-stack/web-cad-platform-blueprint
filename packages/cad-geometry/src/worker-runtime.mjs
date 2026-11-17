@@ -50,6 +50,9 @@ export function createCadWorkerRuntime({loadKernel, send}) {
           requireGeometry(msg.geometryId);
           active=null;(await ensureKernel()).releaseAll();result={disposed:true};break;
         }
+        case 'stats':{
+          result={generation,kernelReady:!!kernel,activeGeometryId:active?.id??null,retainedGeometryCount:active?1:0};break;
+        }
         default:throw new CadGeometryError('PROTOCOL',`unknown worker operation ${msg.kind}`);
       }
       send({v:1,requestId:id,kind:'result',result},transfer);
