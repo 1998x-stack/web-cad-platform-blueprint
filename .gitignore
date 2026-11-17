@@ -14,3 +14,12 @@ coverage/
 # generated local CAD artifacts (tracked fixtures under samples/ are intentional)
 *.tmp
 *.bak
+
+# Local run evidence: raw logs, Playwright traces, generated STEP files and bulk
+# measurement output stay on the machine that produced them. The repository tracks only
+# the sanitized round reports plus the small reproducible measurement harnesses.
+evidence/*/logs/
+evidence/*/artifacts/
+
+# Python editable-install metadata
+*.egg-info/
