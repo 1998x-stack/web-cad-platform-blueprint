@@ -77,7 +77,9 @@ jobs:
       - name: Real planegcs WASM sketch constraint regression
         run: npm run test:sketch-wasm
       - name: CAD-007 actual planegcs + OCCT WASM profile/STEP + 100 build/release cycles
-        run: npm run test:profile-wasm
+        run: PROFILE_STEP_OUTPUT_DIR=/tmp/profile-steps npm run test:profile-wasm
+      - name: Worker-local WASM heap reservation and OCCT arena lifecycle evidence
+        run: npm run test:worker-memory
       - name: Real OCCT WASM in Node Worker; numerical native parity
         run: WASM_STEP_OUTPUT=/tmp/wasm-precision.step npm run test:wasm
       - uses: actions/setup-python@v5
@@ -87,6 +89,8 @@ jobs:
         run: python -m pip install --disable-pip-version-check -e packages/cad-geometry-python
       - name: Independent native OCCT STEP re-import of WASM-generated file
         run: PYTHONPATH=packages/cad-geometry-python/src python scripts/verify_wasm_step_with_native.py /tmp/wasm-precision.step
+      - name: Independent native OCCT re-import of every CAD-007 polygon STEP
+        run: PYTHONPATH=packages/cad-geometry-python/src python scripts/verify_profile_steps_with_native.py /tmp/profile-steps /tmp/profile-step-native-report.json
       - name: Production bundle build
         run: npm run build:studio
       - name: Install headless Chromium Firefox WebKit

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "runId": "run-20261117T102046Z-b5f4850",
+  "note": "Raw STEP/log/trace artifacts are git-ignored; only these hashes are tracked.",
+  "files": [
+    {
+      "path": "profile-steps/triangle.step",
+      "bytes": 12475,
+      "sha256": "6f51e1fd0ec13de155bc495805dc994c20e48a542f190da51766e8249a035546"
+    },
+    {
+      "path": "profile-steps/rotated.step",
+      "bytes": 16313,
+      "sha256": "e0ff489b972685e8dc194bc9288261757117947bc9599ce32f4b376e6fa5389e"
+    },
+    {
+      "path": "profile-steps/concave.step",
+      "bytes": 22465,
+      "sha256": "d5cdd4df8d5c4040de4c975875b0a44090cc4b08cbe752fa03278de66ac5d180"
+    },
+    {
+      "path": "wasm-precision.step",
+      "bytes": 19040,
+      "sha256": "311a37ebe9598a86fb29bc201ffb731f7afbe9db85fd3287afc22fba74defbaf"
+    },
+    {
+      "path": "precision-block.native.step",
+      "bytes": 19041,
+      "sha256": "2021bda703227f572692cdbcf15c7a180bacf962171534c92b58b7c38fc9e622"
+    }
+  ]
+}

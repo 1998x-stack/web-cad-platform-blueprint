@@ -51,7 +51,16 @@ export function createCadWorkerRuntime({loadKernel, send}) {
           active=null;(await ensureKernel()).releaseAll();result={disposed:true};break;
         }
         case 'stats':{
-          result={generation,kernelReady:!!kernel,activeGeometryId:active?.id??null,retainedGeometryCount:active?1:0};break;
+          // Read-only lifecycle evidence; never mutates geometry or the arena.
+          // - retainedGeometryCount is LOGICAL only (derived from `active ? 1 : 0`).
+          // - rawShapeCount is the raw OCCT arena handle count (an object count, not bytes).
+          // - wasmHeapBytes is the Emscripten/WASM linear-memory reservation. It can grow and
+          //   does NOT shrink on release, so treat it as a high-water reservation, never as a
+          //   live-allocation figure.
+          const raw=kernel?.getRawKernel?.();
+          result={generation,kernelReady:!!kernel,activeGeometryId:active?.id??null,retainedGeometryCount:active?1:0,
+            wasmHeapBytes:kernel?.getRawModule?.()?.HEAPU32?.buffer?.byteLength??null,
+            rawShapeCount:raw?.getShapeCount?.()??null};break;
         }
         default:throw new CadGeometryError('PROTOCOL',`unknown worker operation ${msg.kind}`);
       }
