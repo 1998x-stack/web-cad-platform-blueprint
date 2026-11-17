@@ -51,3 +51,31 @@ jobs:
             /tmp/precision-block.step
             /tmp/precision-block.evidence.json
           if-no-files-found: error
+
+  wasm-worker-and-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned WASM and browser app dependencies
+        run: npm install --no-audit --no-fund
+      - name: Pure worker runtime tests (no mocked precision claim)
+        run: npm run test:worker-unit
+      - name: Real OCCT WASM in Node Worker; numerical native parity
+        run: WASM_STEP_OUTPUT=/tmp/wasm-precision.step npm run test:wasm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install independent native STEP reader
+        run: python -m pip install --disable-pip-version-check -e packages/cad-geometry-python
+      - name: Independent native OCCT STEP re-import of WASM-generated file
+        run: PYTHONPATH=packages/cad-geometry-python/src python scripts/verify_wasm_step_with_native.py /tmp/wasm-precision.step
+      - name: Production bundle build
+        run: npm run build:studio
+      - name: Install headless Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Browser dedicated-worker Playwright E2E
+        run: npm run test:browser

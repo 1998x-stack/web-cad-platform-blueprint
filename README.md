@@ -2,6 +2,15 @@
 
 > **版本**：v1.0 · **调研基准**：2026-11-17 · **状态**：规划与可执行命令引擎概念验证（**不是完整 CAD 产品**）
 
+## CAD-004 浏览器 WASM Worker 实现（v1.3 候选）
+
+> `occt-wasm@5.17.2` 真正运行在 Dedicated Worker 内，并提供独立 Node WASM 与 Chromium 浏览器测试，最终通过状态以 GitHub CI 为准。**不代表完整 P0 G0 通过，Solver、Safari/Firefox 与 100-cycle 仍待验证。**
+
+- [实现说明与复现命令](docs/26-browser-occt-wasm-worker-spike.md) / [ADR-0003](docs/adr/0003-occt-wasm-single-thread-worker.md)
+- 内核：`packages/cad-geometry/src/{evaluator,worker-runtime,browser-worker,node-worker,client}.mjs`
+- 浏览器 Studio：`npm install && npm run dev:studio`（http://127.0.0.1:4173），Box/Cylinder/Boolean、参数修改、STEP 下载与 Three.js 渲染。
+- 无网络本地测试：`npm test && npm run test:worker-unit`；联网真实内核：`npm run test:wasm && npm run test:browser`。
+
 ## CAD-004 / CAD-005 最新实现
 
 - [OCCT native B-Rep / STEP round-trip 实测记录](docs/19-cad-004-005-evidence.md)
@@ -9,7 +18,7 @@
 - [技术决策 ADR-0001](docs/adr/0001-native-occt-reference-then-wasm.md)
 - [真实 STEP 示例](samples/precision-block.step) 与 [几何证据](samples/precision-block.evidence.json)
 
-**当前状态：** 使用原生 OCCT 完成几何构建、校验与 STEP 往返；浏览器 WASM Worker 尚未实现，不能把本参考内核称为完整 Web CAD。
+**历史状态（v1.1）：** 当时仅使用原生 OCCT 完成几何构建、校验与 STEP 往返；v1.3 已新增浏览器 Worker 实现，验收范围以 `docs/26` 与 CI 为准。
 
 
 ## 最新实现进展｜v1.2 Contract + Native Geometry + Catalog Hardening
@@ -100,11 +109,11 @@ flowchart TD
 ## 仓库状态与可验证范围
 
 - `packages/cad-core/`：**可运行**的最小 JavaScript 命令引擎，演示 revision、输入验证、依赖 DAG、原子事务和摘要；**不包含** CAD 几何计算。
-- `packages/cad-geometry/`：TypeScript 接口和**明确抛出 NotImplemented** 的几何适配器设计；OCCT/replicad 尚未集成。
+- `packages/cad-geometry/`：TypeScript 旧设计接口仍保留，但真实浏览器 `browser-worker.mjs` 和 `client.mjs` 已实现 P0 子集。`Sketch/Extrude` 等仍未实现。
 - `packages/cad-contracts/`：设计层的跨端类型及 JSON Schema 示例。
 - `packages/cad-store/migrations/001_init.sql`：可在 SQLite 执行的初始数据结构，含模型全文搜索 FTS5。
 - `packages/cad-mcp/contracts/`：MCP 工具契约草案；**非**可运行的 MCP Server。
-- `apps/studio/`、`apps/api/`：待实施的应用边界说明，而非功能产品。
+- `apps/studio/`：新增真实 WASM Worker + Three.js 的最小 P0 演示（非完整 CAD 编辑器）；`apps/api/` 仍为占位说明。
 
 ### 本地验证
 

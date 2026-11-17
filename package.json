@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Architecture blueprint + typed CAD command engine + native OCCT/STEP geometry reference spike",
+  "description": "Typed CAD commands + native OCCT STEP reference + real browser WASM Worker spike",
   "scripts": {
     "test": "node --test packages/cad-core/test/*.test.mjs",
     "check:docs": "python3 scripts/verify_blueprint.py",
@@ -12,12 +12,25 @@
     "check:geometry": "npm run test:geometry",
     "check:contracts": "python3 scripts/generate_contracts.py --check",
     "check:catalog": "python3 -m unittest discover -s packages/cad-store/tests -v",
-    "check:parity": "python3 scripts/check_contract_parity.py"
+    "check:parity": "python3 scripts/check_contract_parity.py",
+    "test:worker-unit": "node --test packages/cad-geometry/test/evaluator.test.mjs",
+    "test:wasm": "node --test packages/cad-geometry/test/real-wasm.test.mjs",
+    "dev:studio": "vite --config apps/studio/vite.config.mjs",
+    "build:studio": "vite build --config apps/studio/vite.config.mjs",
+    "test:browser": "node scripts/test_browser.mjs"
   },
   "engines": {
     "node": ">=20"
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "occt-wasm": "5.17.2",
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "vite": "7.2.2",
+    "playwright": "1.57.0"
+  }
 }
