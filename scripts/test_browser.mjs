@@ -1,4 +1,13 @@
-/** Browser E2E: real WASM inside a dedicated Worker. Requires Playwright Chromium. */
+/**
+ * Browser E2E: real WASM inside a dedicated Worker.
+ *
+ * Chromium only, on purpose. This page renders through THREE.WebGLRenderer, and headless
+ * Firefox/WebKit on the CI runner cannot create a WebGL context, so page init never completes
+ * and `window.__CAD_E2E__` is never set (measured: 60s waitForFunction timeout on
+ * ubuntu-latest, while the same script passes on macOS Firefox/WebKit). Do not widen this gate
+ * to more engines without first making the page degrade gracefully when WebGL is unavailable.
+ * The cross-engine browser gate for P0 is test_profile_browser.mjs, whose page is WebGL-free.
+ */
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
