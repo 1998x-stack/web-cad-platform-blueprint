@@ -18,7 +18,7 @@ jobs:
       # of an empty checkout. Without this, third-party files can silently break the gate,
       # or a checker that scans node_modules passes only because node_modules is absent.
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
       - run: npm test
       - run: npm run test:sketch-unit
       - run: npm run test:profile-unit
@@ -71,7 +71,7 @@ jobs:
         with:
           node-version: '22'
       - name: Install pinned WASM and browser app dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
       - name: Pure worker runtime tests (no mocked precision claim)
         run: npm run test:worker-unit
       - name: Real planegcs WASM sketch constraint regression

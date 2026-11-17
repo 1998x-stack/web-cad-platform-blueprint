@@ -7,3 +7,7 @@
 #sketch-solid-view{position:relative;min-width:0;min-height:400px;border:1px solid #40516b;border-radius:10px;overflow:hidden}
 #sketch-solid-view canvas{display:block}
 @media(max-width:1050px){.sketch-two-views{grid-template-columns:1fr;height:auto}#sketch-solid-view{height:400px}}
+
+/* WebGL-less browsers still execute real OCCT and planegcs workers. */
+.webgl-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;
+  text-align:center;line-height:1.7;font-size:14px;color:#bde3f6;background:#142238}
