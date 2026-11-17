@@ -1,4 +1,10 @@
-/** CAD-006 actual planegcs + OCCT WASM in separate browser Workers. */
+/**
+ * CAD-006 actual planegcs + OCCT WASM in separate browser Workers.
+ *
+ * Chromium only, on purpose: this page also instantiates THREE.WebGLRenderer, so headless
+ * Firefox/WebKit on the CI runner never finish init (same measured limitation as
+ * test_browser.mjs). Cross-engine P0 browser evidence lives in test_profile_browser.mjs.
+ */
 import {chromium} from 'playwright';import assert from 'node:assert/strict';import {spawn} from 'node:child_process';import {setTimeout as sleep} from 'node:timers/promises';
 const server=spawn(process.execPath,['node_modules/vite/bin/vite.js','--config','apps/studio/vite.config.mjs'],{stdio:['ignore','pipe','pipe'],env:{...process.env,CI:'true'}});
 let log='';server.stdout.on('data',b=>log+=String(b));server.stderr.on('data',b=>log+=String(b));let browser;

@@ -1,0 +1,54 @@
+{"label":"test","cmd":"npm run test","exit":0,"seconds":1,"log":"logs/test.log"}
+{"label":"check:contracts","cmd":"npm run check:contracts","exit":0,"seconds":0,"log":"logs/check:contracts.log"}
+{"label":"check:catalog","cmd":"npm run check:catalog","exit":0,"seconds":0,"log":"logs/check:catalog.log"}
+{"label":"check:docs","cmd":"npm run check:docs","exit":1,"seconds":0,"log":"logs/check:docs.log"}
+{"label":"check:parity","cmd":"npm run check:parity","exit":1,"seconds":0,"log":"logs/check:parity.log"}
+{"label":"test:worker-unit","cmd":"npm run test:worker-unit","exit":0,"seconds":1,"log":"logs/test:worker-unit.log"}
+{"label":"test:sketch-unit","cmd":"npm run test:sketch-unit","exit":0,"seconds":0,"log":"logs/test:sketch-unit.log"}
+{"label":"test:profile-unit","cmd":"npm run test:profile-unit","exit":0,"seconds":0,"log":"logs/test:profile-unit.log"}
+{"label":"test:geometry","cmd":"npm run test:geometry","exit":1,"seconds":0,"log":"logs/test:geometry.log"}
+{"label":"test:wasm","cmd":"npm run test:wasm","exit":0,"seconds":1,"log":"logs/test:wasm.log"}
+{"label":"test:sketch-wasm","cmd":"npm run test:sketch-wasm","exit":0,"seconds":0,"log":"logs/test:sketch-wasm.log"}
+{"label":"test:profile-wasm","cmd":"npm run test:profile-wasm","exit":0,"seconds":1,"log":"logs/test:profile-wasm.log"}
+{"label":"build:studio","cmd":"npm run build:studio","exit":0,"seconds":2,"log":"logs/build:studio.log"}
+{"label":"check:docs","cmd":"npm run check:docs","exit":0,"seconds":0,"log":"logs/check:docs.log"}
+{"label":"test:geometry","cmd":"env PYTHONPATH=packages/cad-geometry-python/src /tmp/cad-ocp-venv/bin/python -m unittest discover -s packages/cad-geometry-python/tests -v","exit":0,"seconds":2,"log":"logs/test:geometry.log"}
+{"label":"check:parity","cmd":"/tmp/cad-ocp-venv/bin/python scripts/check_contract_parity.py","exit":0,"seconds":1,"log":"logs/check:parity.log"}
+{"label":"test:wasm-with-output","cmd":"env WASM_STEP_OUTPUT=/Users/x/Desktop/codes/web-cad-platform-blueprint/evidence/run-20261117T071345Z-4f2345e/artifacts/wasm-precision.step npm run test:wasm","exit":0,"seconds":2,"log":"logs/test:wasm-with-output.log"}
+{"label":"verify-wasm-step-native","cmd":"env PYTHONPATH=packages/cad-geometry-python/src /tmp/cad-ocp-venv/bin/python scripts/verify_wasm_step_with_native.py /Users/x/Desktop/codes/web-cad-platform-blueprint/evidence/run-20261117T071345Z-4f2345e/artifacts/wasm-precision.step","exit":0,"seconds":2,"log":"logs/verify-wasm-step-native.log"}
+{"label":"check:sketch-schema","cmd":"/tmp/cad-ocp-venv/bin/python scripts/check_sketch_schema.py","exit":0,"seconds":0,"log":"logs/check:sketch-schema.log"}
+{"label":"check:milestones","cmd":"python3 scripts/audit_next_milestones.py","exit":0,"seconds":0,"log":"logs/check:milestones.log"}
+{"label":"test:profile-wasm-after-fix","cmd":"npm run test:profile-wasm","exit":0,"seconds":2,"log":"logs/test:profile-wasm-after-fix.log"}
+{"label":"test:profile-wasm-final","cmd":"npm run test:profile-wasm","exit":0,"seconds":1,"log":"logs/test:profile-wasm-final.log"}
+{"label":"recheck-check","cmd":"npm run check","exit":0,"seconds":1,"log":"logs/recheck-check.log"}
+{"label":"recheck-test:worker-unit","cmd":"npm run test:worker-unit","exit":0,"seconds":1,"log":"logs/recheck-test:worker-unit.log"}
+{"label":"recheck-test:wasm","cmd":"npm run test:wasm","exit":0,"seconds":0,"log":"logs/recheck-test:wasm.log"}
+{"label":"recheck-test:sketch-unit","cmd":"npm run test:sketch-unit","exit":0,"seconds":1,"log":"logs/recheck-test:sketch-unit.log"}
+{"label":"recheck-test:sketch-wasm","cmd":"npm run test:sketch-wasm","exit":0,"seconds":0,"log":"logs/recheck-test:sketch-wasm.log"}
+{"label":"recheck-test:profile-unit","cmd":"npm run test:profile-unit","exit":0,"seconds":0,"log":"logs/recheck-test:profile-unit.log"}
+{"label":"test:browser","cmd":"npm run test:browser","exit":0,"seconds":3,"log":"logs/test:browser.log"}
+{"label":"test:sketch-browser","cmd":"npm run test:sketch-browser","exit":0,"seconds":1,"log":"logs/test:sketch-browser.log"}
+{"label":"test:profile-browser","cmd":"npm run test:profile-browser","exit":0,"seconds":6,"log":"logs/test:profile-browser.log"}
+{"label":"test:sketch-browser-multiengine","cmd":"npm run test:sketch-browser","exit":0,"seconds":7,"log":"logs/test:sketch-browser-multiengine.log"}
+{"label":"test:browser-multiengine","cmd":"npm run test:browser","exit":0,"seconds":7,"log":"logs/test:browser-multiengine.log"}
+{"label":"final-check","cmd":"npm run check","exit":1,"seconds":1,"log":"logs/final-check.log"}
+{"label":"final-test:worker-unit","cmd":"npm run test:worker-unit","exit":0,"seconds":0,"log":"logs/final-test:worker-unit.log"}
+{"label":"final-test:sketch-unit","cmd":"npm run test:sketch-unit","exit":0,"seconds":0,"log":"logs/final-test:sketch-unit.log"}
+{"label":"final-test:profile-unit","cmd":"npm run test:profile-unit","exit":0,"seconds":1,"log":"logs/final-test:profile-unit.log"}
+{"label":"final-test:wasm","cmd":"npm run test:wasm","exit":0,"seconds":0,"log":"logs/final-test:wasm.log"}
+{"label":"final-test:sketch-wasm","cmd":"npm run test:sketch-wasm","exit":0,"seconds":0,"log":"logs/final-test:sketch-wasm.log"}
+{"label":"final-test:profile-wasm","cmd":"npm run test:profile-wasm","exit":0,"seconds":1,"log":"logs/final-test:profile-wasm.log"}
+{"label":"final-build:studio","cmd":"npm run build:studio","exit":0,"seconds":2,"log":"logs/final-build:studio.log"}
+{"label":"final-test:geometry","cmd":"env PYTHONPATH=packages/cad-geometry-python/src /tmp/cad-ocp-venv/bin/python -m unittest discover -s packages/cad-geometry-python/tests -v","exit":0,"seconds":2,"log":"logs/final-test:geometry.log"}
+{"label":"final-check:parity","cmd":"/tmp/cad-ocp-venv/bin/python scripts/check_contract_parity.py","exit":0,"seconds":0,"log":"logs/final-check:parity.log"}
+{"label":"final2-npm-check","cmd":"npm run check","exit":0,"seconds":1,"log":"logs/final2-npm-check.log"}
+{"label":"final2-check-docs","cmd":"npm run check:docs","exit":0,"seconds":0,"log":"logs/final2-check-docs.log"}
+{"label":"verify-check","cmd":"npm run check","exit":0,"seconds":1,"log":"logs/verify-check.log"}
+{"label":"verify-test:profile-wasm","cmd":"npm run test:profile-wasm","exit":0,"seconds":1,"log":"logs/verify-test:profile-wasm.log"}
+{"label":"verify-test:browser","cmd":"npm run test:browser","exit":0,"seconds":6,"log":"logs/verify-test:browser.log"}
+{"label":"verify-test:sketch-browser","cmd":"npm run test:sketch-browser","exit":0,"seconds":5,"log":"logs/verify-test:sketch-browser.log"}
+{"label":"verify-test:profile-browser","cmd":"npm run test:profile-browser","exit":0,"seconds":5,"log":"logs/verify-test:profile-browser.log"}
+{"label":"verify-test:geometry","cmd":"env PYTHONPATH=packages/cad-geometry-python/src /tmp/cad-ocp-venv/bin/python -m unittest discover -s packages/cad-geometry-python/tests -v","exit":0,"seconds":1,"log":"logs/verify-test:geometry.log"}
+{"label":"verify-check:parity","cmd":"/tmp/cad-ocp-venv/bin/python scripts/check_contract_parity.py","exit":0,"seconds":0,"log":"logs/verify-check:parity.log"}
+{"label":"revert-test:browser","cmd":"npm run test:browser","exit":0,"seconds":3,"log":"logs/revert-test:browser.log"}
+{"label":"revert-test:sketch-browser","cmd":"npm run test:sketch-browser","exit":0,"seconds":2,"log":"logs/revert-test:sketch-browser.log"}

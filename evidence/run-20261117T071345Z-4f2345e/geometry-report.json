@@ -1,0 +1,246 @@
+{
+  "runId": "run-20261117T071345Z-4f2345e",
+  "gitSha": "4f2345e53ce42c5d6ecf0537f81d8aeb24ce383b",
+  "workingTree": "dirty (4 modified files under fix/ + evidence/); see changes.md",
+  "generatedUtc": "2026-11-17T07:43:28Z",
+  "units": "mm / mm^2 / mm^3",
+  "kernelVersions": {
+    "wasm": "occt-wasm 5.17.2 (WASM; node worker_threads + browser Worker)",
+    "native": "cadquery-ocp 7.9.3.1.1 (native OCCT 7.9.3, CPython 3.12.15 arm64)",
+    "sketchSolver": "@salusoft89/planegcs 1.3.0 (WASM)"
+  },
+  "howMeasured": "OBSERVED values, not expected ones: artifacts/profile-measurements.json was produced by artifacts/measure-profiles.mjs, which drives the repository's real client/worker/solver modules and prints full-precision evidence per case.",
+  "independentOracle": {
+    "claim": "A STEP file written by the WASM kernel was re-read by a DIFFERENT OCCT build (native bindings, separate process) and compared numerically.",
+    "stepFile": "artifacts/wasm-precision.step",
+    "stepSha256": "4fffa2ac736678147227363e3f8950b8f88261c4d74220a088513e9fb396d1d8",
+    "stepBytes": 19040,
+    "nativeReadSucceeded": true,
+    "wasmSourceGeometry": {
+      "valid": true,
+      "solids": 1,
+      "volume_mm3": 214492.03552627692,
+      "bbox_mm": [
+        -1e-07,
+        -1e-07,
+        -1e-07,
+        120.0000001,
+        60.0000001,
+        30.0000001
+      ],
+      "area_mm2": 25853.451271946677,
+      "faces": 7
+    },
+    "nativeReimportGeometry": {
+      "valid": true,
+      "solids": 1,
+      "volume_mm3": 214492.03552627686,
+      "bbox_mm": [
+        -1e-07,
+        -1e-07,
+        -1e-07,
+        120.0000001,
+        60.0000001,
+        30.0000001
+      ],
+      "area_mm2": 25853.451271946728,
+      "faces": 7
+    },
+    "compare": {
+      "passed": true,
+      "volumeDeltaMm3": 5.820766091346741e-11,
+      "bboxMaxDeltaMm": 0.0,
+      "areaDeltaMm2": 5.093170329928398e-11,
+      "faceCountBefore": 7,
+      "faceCountAfter": 7,
+      "tolerances": {
+        "volumeAbsMm3": 0.001,
+        "bboxAbsMm": 0.0001,
+        "areaAbsMm2": 0.001
+      }
+    },
+    "verdict": "PASS"
+  },
+  "nativeRoundTrip": {
+    "fixture": "samples/precision-block.cad.json (120x60x30 block with 1 through hole)",
+    "documentId": "precision_block_001",
+    "documentRevision": 1,
+    "geometry": {
+      "schemaVersion": 1,
+      "documentId": "precision_block_001",
+      "documentRevision": 1,
+      "kernelBuildId": "cadquery-ocp/7.9.3.1.1/native",
+      "valid": true,
+      "solidCount": 1,
+      "volumeMm3": 214492.03552627692,
+      "bboxMm": [
+        -1e-07,
+        -1e-07,
+        -1e-07,
+        120.0000001,
+        60.0000001,
+        30.0000001
+      ],
+      "surfaceAreaMm2": 25853.451271946677,
+      "faceCount": 7,
+      "warnings": []
+    },
+    "roundTrip": {
+      "passed": true,
+      "volumeDeltaMm3": 5.820766091346741e-11,
+      "bboxMaxDeltaMm": 0.0,
+      "areaDeltaMm2": 5.093170329928398e-11,
+      "faceCountBefore": 7,
+      "faceCountAfter": 7,
+      "tolerances": {
+        "volumeAbsMm3": 0.001,
+        "bboxAbsMm": 0.0001,
+        "areaAbsMm2": 0.001
+      }
+    },
+    "step": {
+      "sha256": "d231c8bc90de5ff342f8d0cc9441963999b1bf40b65f882e5199f15bbf2bd172",
+      "bytes": 19041,
+      "file": "artifacts/precision-block.step"
+    },
+    "verdict": "PASS"
+  },
+  "profileExtrusion": {
+    "route": "planegcs solve -> exact closed line loop -> OCCT makeLineEdge -> makeWire -> makeFace -> extrude",
+    "kernelUnderTest": "occt-wasm 5.17.2 in a node worker_threads Worker (npm run test:profile-wasm)",
+    "cases": [
+      {
+        "id": "PROF-001",
+        "name": "right triangle, NOT its bounding box",
+        "sample": "samples/triangle.sketch.json",
+        "analyticAreaMm2": 6000,
+        "depthMm": 10,
+        "expectedVolumeMm3": 60000,
+        "measuredVolumeMm3": 60000,
+        "absErrMm3": 0,
+        "toleranceMm3": 0.001,
+        "passed": true,
+        "measuredSolidCount": 1,
+        "measuredValid": true,
+        "measuredFaceCount": 5,
+        "measuredBboxMm": [
+          0,
+          0,
+          0,
+          100,
+          120,
+          10
+        ],
+        "stepBytes": 12475,
+        "stepIsIso10303": true,
+        "solverStatus": "fully_constrained",
+        "degreesOfFreedom": 0,
+        "constraintCount": 0,
+        "fixedPoints": "3/3"
+      },
+      {
+        "id": "PROF-002",
+        "name": "rotated rectangle, deliberately non-axis-aligned",
+        "sample": "samples/rotated.sketch.json",
+        "analyticAreaMm2": 800,
+        "depthMm": 10,
+        "expectedVolumeMm3": 8000,
+        "measuredVolumeMm3": 8000,
+        "absErrMm3": 0,
+        "toleranceMm3": 0.001,
+        "passed": true,
+        "measuredSolidCount": 1,
+        "measuredValid": true,
+        "measuredFaceCount": 6,
+        "measuredBboxMm": [
+          -10,
+          0,
+          0,
+          34.64101615137755,
+          37.32050807568877,
+          10
+        ],
+        "stepBytes": 16313,
+        "stepIsIso10303": true,
+        "solverStatus": "fully_constrained",
+        "degreesOfFreedom": 0,
+        "constraintCount": 0,
+        "fixedPoints": "4/4"
+      },
+      {
+        "id": "PROF-003",
+        "name": "concave L hexagon, concavity preserved",
+        "sample": "samples/concave.sketch.json",
+        "analyticAreaMm2": 5600,
+        "depthMm": 12,
+        "expectedVolumeMm3": 67200,
+        "measuredVolumeMm3": 67200,
+        "absErrMm3": 0,
+        "toleranceMm3": 0.001,
+        "passed": true,
+        "measuredSolidCount": 1,
+        "measuredValid": true,
+        "measuredFaceCount": 8,
+        "measuredBboxMm": [
+          0,
+          0,
+          0,
+          100,
+          80,
+          12
+        ],
+        "stepBytes": 22465,
+        "stepIsIso10303": true,
+        "solverStatus": "fully_constrained",
+        "degreesOfFreedom": 0,
+        "constraintCount": 0,
+        "fixedPoints": "6/6"
+      }
+    ],
+    "caveat": "samples triangle/rotated/concave declare all points fixed and ZERO constraints, so planegcs reports DOF 0 trivially. These cases prove exact loop->Wire->Face->Extrude geometry; they do NOT prove parametric constraint solving. Constraint solving is only exercised by samples/rectangle.sketch.json (6 constraints; solves to 119x60)."
+  },
+  "nativeFixtureSuite": {
+    "command": "native oracle python -m unittest discover -s packages/cad-geometry-python/tests -v",
+    "ran": 18,
+    "failures": 0,
+    "errors": 0,
+    "analyticChecks": [
+      {
+        "id": "GEO-001",
+        "expectedMm3": "120*60*30 = 216000",
+        "toleranceMm3": 0.001
+      },
+      {
+        "id": "GEO-003",
+        "expectedMm3": "120*60*30 - pi*6^2*30",
+        "toleranceMm3": 0.001
+      },
+      {
+        "id": "parameter-only-change",
+        "expectedMm3": "hole diameter driven purely by a parameter reference",
+        "toleranceMm3": 0.001
+      },
+      {
+        "id": "GEO-004",
+        "note": "a cut that fully misses must not silently yield an invalid solid"
+      },
+      {
+        "id": "fail-closed",
+        "note": "NaN / negative radius / duplicate feature id / missing dependency / non-mm unit all rejected"
+      }
+    ],
+    "verdict": "PASS"
+  },
+  "crossRuntimeContractParity": {
+    "command": "scripts/check_contract_parity.py under the native oracle + jsonschema Draft 2020-12",
+    "result": "PASS 16 solid fixtures: JS/native semantic parity; JSON Schema accepted all positives"
+  },
+  "notClaimed": [
+    "No exact B-Rep validity claim for interactive Studio drawing (only /profile.html and Worker paths ran).",
+    "No fillet / shell / loft / sweep / arc / spline evidence.",
+    "No third-party industrial STEP interoperability (CAD-005 matrix) evidence.",
+    "Browser matrix incomplete this run - see browser-matrix.md.",
+    "macOS Safari on-device verification NOT executed.",
+    "100 lifecycle cycles prove ZERO retained handles per cycle and ~1 MiB steady-state parent RSS drift; this is NOT proof of absence of WASM heap leaks."
+  ]
+}

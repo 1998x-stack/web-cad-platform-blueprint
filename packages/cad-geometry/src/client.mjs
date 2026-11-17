@@ -34,5 +34,7 @@ export class CadWorkerClient {
   }
   async exportStep(geometryId){return (await this.request('export-step',{geometryId})).bytes;}
   async dispose(geometryId){const r=await this.request('dispose',{geometryId});if(this.currentGeometryId===geometryId)this.currentGeometryId=null;return r;}
+  /** Worker-side bookkeeping used for lifecycle evidence (no kernel mutation). */
+  stats(){return this.request('stats');}
   close(){if(this.closed)return;this.closed=true;this.worker.removeEventListener?.('message',this.onMessage);this.worker.removeEventListener?.('error',this.onFatal);this.worker.off?.('message',this.onMessage);this.worker.off?.('error',this.onFatal);this.worker.terminate();for(const v of this.pending.values()){clearTimeout(v.timer);v.reject(new Error('Worker terminated'));}this.pending.clear();}
 }

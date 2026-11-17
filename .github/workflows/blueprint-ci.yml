@@ -13,6 +13,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      # Reproduce developer conditions: the blueprint checks below walk the repository, so
+      # they must be exercised with a real dependency tree present (node_modules) instead
+      # of an empty checkout. Without this, third-party files can silently break the gate,
+      # or a checker that scans node_modules passes only because node_modules is absent.
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
       - run: npm test
       - run: npm run test:sketch-unit
       - run: npm run test:profile-unit

@@ -21,20 +21,39 @@ test('real WASM profile: triangle, rotated rectangle, concave L exact volumes + 
   }
  }finally{client.close()}
 });
-test('100 build+tessellate+dispose cycles reject stale handles and report RSS', {timeout:240_000},async()=>{
+test('100 build+tessellate+dispose cycles release every geometry handle (steady-state drift reported)', {timeout:240_000},async()=>{
  const worker=new Worker(new URL('../src/node-worker.mjs',import.meta.url),{type:'module'}),client=new CadWorkerClient(worker,{timeoutMs:150_000});
  const doc=solvedProfileToCadDocument(file('triangle'),{sketchId:'TriangleSketch',sourceRevision:1,valid:true,status:'fully_constrained',points:file('triangle').points},10);
- const rss0=process.memoryUsage().rss;let finalVolume=0;
+ const WARMUP=20,TOTAL=100;let finalVolume=0,baselineRss=0;
  try{
   await client.initialize();
-  for(let i=0;i<100;i++){
+  // Positive control: the invariant asserted below must be falsifiable, i.e. a live B-Rep
+  // handle IS counted and dispose DOES clear it. Without this the loop assertion is vacuous.
+  {const probe=structuredClone(doc);probe.revision=1;const built=await client.build(probe);
+   const live=await client.stats();
+   assert.equal(live.retainedGeometryCount,1,'stats must count a live geometry');
+   assert.equal(live.activeGeometryId,built.geometryId,'stats must report the live geometry id');
+   await client.dispose(built.geometryId);
+   assert.equal((await client.stats()).retainedGeometryCount,0,'dispose must clear the retained count');}
+  for(let i=0;i<TOTAL;i++){
    const d=structuredClone(doc);d.revision=i+1;
    const b=await client.build(d);finalVolume=b.evidence.volumeMm3;
    const mesh=await client.tessellate(b.geometryId,0.25,0.75);assert.ok(mesh.triangleCount>0);
    await client.dispose(b.geometryId);
+   // Hard invariant: the OCCT arena must hold zero B-Rep handles once disposed. This is
+   // checkable evidence; RSS is not.
+   const s=await client.stats();
+   assert.equal(s.retainedGeometryCount,0,`cycle ${i}: worker retained a geometry after dispose`);
+   assert.equal(s.activeGeometryId,null,`cycle ${i}: worker kept an active geometry id`);
    if(i%20===0)await assert.rejects(()=>client.exportStep(b.geometryId),{code:'STALE_GEOMETRY'});
+   if(i===WARMUP)baselineRss=process.memoryUsage().rss;
   }
   assert.ok(Math.abs(finalVolume-60000)<0.001);
  }finally{client.close();}
- console.log(`100 CAD-007 lifecycle cycles completed, parent RSS delta: ${(process.memoryUsage().rss-rss0)/1048576} MiB (not a per-WASM heap proof)`);
+ /* Honest metric, deliberately weaker than "no leak": parent-process RSS sampled AFTER
+    WARMUP cycles so one-time WASM instantiation and arena warm-up are excluded. It measures
+    the JS/worker boundary drift only; it does NOT observe the OCCT arena inside the Worker,
+    and it is JS-GC and allocator dependent, so no absolute threshold is asserted. */
+ const driftMiB=(process.memoryUsage().rss-baselineRss)/1048576;
+ console.log(`[memory] ${TOTAL} CAD-007 lifecycle cycles: 0 retained handles every cycle; parent RSS drift over the last ${TOTAL-WARMUP} cycles: ${driftMiB.toFixed(2)} MiB (post-init steady state, not a per-WASM-heap leak proof)`);
 });

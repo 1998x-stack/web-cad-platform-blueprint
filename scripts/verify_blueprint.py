@@ -7,11 +7,36 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
+# First-party sources only. Vendored dependencies, build output and VCS metadata are
+# not part of the blueprint and must never break this gate (they ship their own
+# README links and JSON that we do not control).
+IGNORED_DIRS = frozenset({
+    '.git', 'node_modules', 'dist', 'build', 'coverage',
+    '.venv', 'venv', '__pycache__', '.pytest_cache',
+})
+
+# Markdown that *documents* link syntax (fenced blocks, inline code spans) is not a real
+# link and must not be reported. Stripping it removes false positives only; genuine links
+# outside code are still checked.
+FENCED_CODE_RE = re.compile(r'^[ \t]*(?:```|~~~).*?^[ \t]*(?:```|~~~)[ \t]*$', re.MULTILINE | re.DOTALL)
+INLINE_CODE_RE = re.compile(r'`[^`\n]*`')
+
+
+def iter_first_party(pattern):
+    """Yield repository files matching `pattern`, skipping ignored directories."""
+    for path in sorted(ROOT.rglob(pattern)):
+        rel = path.relative_to(ROOT)
+        if any(part in IGNORED_DIRS for part in rel.parts[:-1]):
+            continue
+        yield path
+
 
 def check_markdown_links():
     issues = []
-    for md in ROOT.rglob('*.md'):
-        text = md.read_text(encoding='utf-8')
+    checked = 0
+    for md in iter_first_party('*.md'):
+        checked += 1
+        text = INLINE_CODE_RE.sub('', FENCED_CODE_RE.sub('', md.read_text(encoding='utf-8')))
         for uri in re.findall(r'(?<!!)\[[^\]]+\]\(([^)]+)\)', text):
             path = uri.split('#', 1)[0]
             if not path or path.startswith(('http://', 'https://', 'mailto:')):
@@ -20,12 +45,12 @@ def check_markdown_links():
                 issues.append(f'{md.relative_to(ROOT)} -> {uri}')
     if issues:
         raise AssertionError('Missing local links:\n' + '\n'.join(issues))
-    return len(list(ROOT.rglob('*.md')))
+    return checked
 
 
 def check_json():
     names = []
-    for p in ROOT.rglob('*.json'):
+    for p in iter_first_party('*.json'):
         json.loads(p.read_text(encoding='utf-8'))
         names.append(str(p.relative_to(ROOT)))
     return names
