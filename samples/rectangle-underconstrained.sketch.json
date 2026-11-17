@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "sketchId": "UnderconstrainedRectangle",
+  "revision": 1,
+  "units": "mm",
+  "plane": "XY",
+  "points": [
+    {
+      "id": "P0",
+      "x": 0,
+      "y": 0,
+      "fixed": true
+    },
+    {
+      "id": "P1",
+      "x": 119,
+      "y": 1,
+      "fixed": false
+    },
+    {
+      "id": "P2",
+      "x": 119,
+      "y": 59,
+      "fixed": false
+    },
+    {
+      "id": "P3",
+      "x": 0,
+      "y": 60,
+      "fixed": false
+    }
+  ],
+  "lines": [
+    {
+      "id": "L0",
+      "start": "P0",
+      "end": "P1"
+    },
+    {
+      "id": "L1",
+      "start": "P1",
+      "end": "P2"
+    },
+    {
+      "id": "L2",
+      "start": "P2",
+      "end": "P3"
+    },
+    {
+      "id": "L3",
+      "start": "P3",
+      "end": "P0"
+    }
+  ],
+  "circles": [],
+  "constraints": [
+    {
+      "id": "HorizontalBottom",
+      "type": "horizontal",
+      "line": "L0"
+    },
+    {
+      "id": "VerticalRight",
+      "type": "vertical",
+      "line": "L1"
+    },
+    {
+      "id": "HorizontalTop",
+      "type": "horizontal",
+      "line": "L2"
+    },
+    {
+      "id": "VerticalLeft",
+      "type": "vertical",
+      "line": "L3"
+    },
+    {
+      "id": "Width120",
+      "type": "distance",
+      "a": "P0",
+      "b": "P1",
+      "value": 120
+    }
+  ]
+}
