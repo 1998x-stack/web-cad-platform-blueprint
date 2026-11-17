@@ -20,11 +20,11 @@ const PLANES = new Set(['XY', 'XZ', 'YZ']);
 const TYPES = new Set(['sketch', 'extrude', 'boolean', 'box', 'cylinder']);
 const OPS = new Set(['union', 'cut', 'intersect']);
 const KINDS = new Set(['length', 'angle', 'count']);
-function assertVector3(value, label, positive = false) {
+function assertVector3(value, label, positive = false, params = {}) {
   if (!Array.isArray(value) || value.length !== 3) error('INVALID_INPUT', `${label}: expected 3-vector`);
   for (const n of value) {
-    assertFinite(n, label);
-    if (positive && n <= 0) error('INVALID_INPUT', `${label}: must be positive`);
+    if (positive) assertLengthScalar(n, label, params);
+    else assertFinite(n, label);
   }
 }
 const error = (code, message) => { throw new CadDomainError(code, message); };
@@ -67,7 +67,19 @@ function assertParameter(x) {
   if (x.kind === 'length' && x.value <= 0) error('INVALID_INPUT', 'length must be positive');
   if (x.kind === 'count' && (!Number.isInteger(x.value) || x.value < 0)) error('INVALID_INPUT', 'count must be non-negative integer');
 }
-function validateFeature(feature) {
+/** Length dimensions are either a positive literal in millimetres or a
+ *  typed parameter reference. No strings, expressions, or JS execution. */
+function assertLengthScalar(value, label, parameters) {
+  if (typeof value === 'number') return assertPositive(value, label);
+  assertPlainObject(value, label);
+  assertAllowedKeys(value, ['parameterRef'], label);
+  assertId(value.parameterRef, `${label}.parameterRef`);
+  if (!Object.hasOwn(parameters, value.parameterRef)) error('MISSING_PARAMETER', `${label}: missing ${value.parameterRef}`);
+  if (parameters[value.parameterRef].kind !== 'length') error('INVALID_PARAMETER_KIND', `${label}: expected length parameter`);
+  assertPositive(parameters[value.parameterRef].value, label);
+}
+
+function validateFeature(feature, parameters) {
   assertPlainObject(feature, 'feature');
   assertAllowedKeys(feature, ['id', 'type', 'inputs', 'plane', 'entities', 'constraints', 'distanceMm', 'booleanOp', 'originMm', 'sizeMm', 'radiusMm', 'heightMm', 'axis'], 'feature');
   assertId(feature.id, 'feature.id');
@@ -78,13 +90,13 @@ function validateFeature(feature) {
   if (feature.type === 'box') {
     if (feature.inputs.length !== 0) error('INVALID_INPUT', 'box needs no inputs');
     assertVector3(feature.originMm,'box.originMm');
-    assertVector3(feature.sizeMm,'box.sizeMm',true);
+    assertVector3(feature.sizeMm,'box.sizeMm',true,parameters);
   }
   if (feature.type === 'cylinder') {
     if (feature.inputs.length !== 0 || feature.axis !== 'Z') error('INVALID_INPUT', 'cylinder needs no inputs and Z axis');
     assertVector3(feature.originMm,'cylinder.originMm');
-    assertPositive(feature.radiusMm,'cylinder.radiusMm');
-    assertPositive(feature.heightMm,'cylinder.heightMm');
+    assertLengthScalar(feature.radiusMm,'cylinder.radiusMm',parameters);
+    assertLengthScalar(feature.heightMm,'cylinder.heightMm',parameters);
   }
   if (feature.type === 'sketch') {
     if (!PLANES.has(feature.plane) || feature.inputs.length !== 0) error('INVALID_INPUT', 'sketch requires plane and no inputs');
@@ -96,7 +108,7 @@ function validateFeature(feature) {
   }
   if (feature.type === 'extrude') {
     if (feature.inputs.length !== 1) error('INVALID_INPUT', 'extrude needs one sketch input');
-    assertPositive(feature.distanceMm, 'extrude.distanceMm');
+    assertLengthScalar(feature.distanceMm, 'extrude.distanceMm', parameters);
   }
   if (feature.type === 'boolean') {
     if (feature.inputs.length !== 2 || feature.inputs[0] === feature.inputs[1] || !OPS.has(feature.booleanOp)) {
@@ -107,6 +119,7 @@ function validateFeature(feature) {
 
 export function validateDocument(doc) {
   assertPlainObject(doc, 'document');
+  assertAllowedKeys(doc, ['schemaVersion','documentId','revision','units','parameters','features','outputBodyId'], 'document');
   if (doc.schemaVersion !== 1 || doc.units !== 'mm' || !Number.isSafeInteger(doc.revision) || doc.revision < 0) {
     error('INVALID_DOCUMENT', 'invalid document schema, units or revision');
   }
@@ -117,7 +130,7 @@ export function validateDocument(doc) {
   if (!Array.isArray(doc.features) || doc.features.length > 10000) error('INVALID_DOCUMENT', 'invalid feature collection');
   const nodes = new Map();
   for (const f of doc.features) {
-    validateFeature(f);
+    validateFeature(f, doc.parameters);
     if (nodes.has(f.id)) error('DUPLICATE_FEATURE', `duplicate feature: ${f.id}`);
     nodes.set(f.id, f);
   }
@@ -138,7 +151,13 @@ export function validateDocument(doc) {
     for (const dep of nodes.get(id).inputs) visit(dep);
     status.set(id, 'done');
   }
-  for (const id of nodes.keys()) visit(id);
+  for (const id of [...nodes.keys()].sort()) visit(id);
+  if (doc.outputBodyId !== undefined) {
+    assertId(doc.outputBodyId, 'outputBodyId');
+    const output = nodes.get(doc.outputBodyId);
+    if (!output) error('MISSING_DEPENDENCY', `outputBodyId ${doc.outputBodyId} does not exist`);
+    if (!['box','cylinder','boolean','extrude'].includes(output.type)) error('INVALID_DEPENDENCY', 'outputBodyId must name a solid-producing feature');
+  }
   return true;
 }
 
@@ -162,18 +181,22 @@ function applyCommand(doc, command) {
     doc.parameters[command.name] = p;
   } else if (command.op === 'feature.add') {
     assertAllowedKeys(command,['op','feature'],'feature.add');
-    validateFeature(command.feature);
+    validateFeature(command.feature, doc.parameters);
     if (doc.features.some(f => f.id === command.feature.id)) error('DUPLICATE_FEATURE', 'feature already exists');
     doc.features.push(clone(command.feature));
   } else if (command.op === 'feature.update') {
     assertAllowedKeys(command,['op','id','patch'],'feature.update');
     updateFeature(doc,command);
+  } else if (command.op === 'output.set') {
+    assertAllowedKeys(command, ['op','featureId'], 'output.set');
+    assertId(command.featureId,'output.set featureId');
+    doc.outputBodyId = command.featureId;
   } else if (command.op === 'feature.remove') {
     assertAllowedKeys(command,['op','id'],'feature.remove');
     assertId(command.id,'feature.remove id');
     const index = doc.features.findIndex(f => f.id === command.id);
     if (index < 0) error('NOT_FOUND','feature not found');
-    if (doc.features.some(f => f.inputs.includes(command.id))) error('FEATURE_IN_USE','feature has dependents');
+    if (doc.features.some(f => f.inputs.includes(command.id)) || doc.outputBodyId === command.id) error('FEATURE_IN_USE','feature has dependents or is outputBodyId');
     doc.features.splice(index, 1);
   } else {
     error('UNSUPPORTED_COMMAND','unsupported command');
@@ -218,4 +241,18 @@ export function commitLocalPreview(doc, preview, {approved = false} = {}) {
   validateDocument(preview.candidateDocument);
   if (preview.candidateDocument.revision !== doc.revision + 1) error('INVALID_PREVIEW','candidate revision invalid');
   return clone(preview.candidateDocument);
+}
+
+/** Deterministic dependency-first evaluation. Feature array order is UI only. */
+export function evaluationOrder(doc) {
+  validateDocument(doc);
+  const byId = new Map(doc.features.map(f => [f.id, f]));
+  const visited = new Set(), result = [];
+  const visit = id => {
+    if (visited.has(id)) return;
+    for (const dep of [...byId.get(id).inputs].sort()) visit(dep);
+    visited.add(id); result.push(id);
+  };
+  for (const id of [...byId.keys()].sort()) visit(id);
+  return result;
 }

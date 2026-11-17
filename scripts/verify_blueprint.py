@@ -61,6 +61,15 @@ def check_sql():
         pass
     else:
         raise AssertionError('foreign key violation was accepted')
+    # v2 must upgrade a v1 database *without weakening old published release history*.
+    db.executescript((ROOT / 'packages/cad-store/migrations/002_immutable_publications.sql').read_text(encoding='utf-8'))
+    assert db.execute('SELECT state FROM model_releases WHERE id=1').fetchone()[0] == 'published'
+    try:
+        db.execute("INSERT INTO release_assets(release_id,asset_id,role) VALUES(1,1,'source')")
+    except sqlite3.IntegrityError:
+        pass
+    else:
+        raise AssertionError('published v1 release membership was mutable after v2 upgrade')
     assert db.execute('PRAGMA foreign_key_check').fetchall() == []
     return db.execute("SELECT version FROM schema_migrations").fetchall()
 

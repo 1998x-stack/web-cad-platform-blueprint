@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "documentId": "precision_block_001",
+  "revision": 2,
+  "units": "mm",
+  "parameters": {
+    "holeRadius": {
+      "kind": "length",
+      "value": 6
+    }
+  },
+  "features": [
+    {
+      "id": "base",
+      "type": "box",
+      "inputs": [],
+      "originMm": [
+        0,
+        0,
+        0
+      ],
+      "sizeMm": [
+        120,
+        60,
+        30
+      ]
+    },
+    {
+      "id": "drill",
+      "type": "cylinder",
+      "inputs": [],
+      "originMm": [
+        60,
+        30,
+        0
+      ],
+      "radiusMm": {
+        "parameterRef": "holeRadius"
+      },
+      "heightMm": 30,
+      "axis": "Z"
+    },
+    {
+      "id": "result",
+      "type": "boolean",
+      "inputs": [
+        "base",
+        "drill"
+      ],
+      "booleanOp": "cut"
+    }
+  ],
+  "outputBodyId": "result"
+}

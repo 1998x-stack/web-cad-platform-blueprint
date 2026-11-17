@@ -7,9 +7,12 @@
   "scripts": {
     "test": "node --test packages/cad-core/test/*.test.mjs",
     "check:docs": "python3 scripts/verify_blueprint.py",
-    "check": "npm test && npm run check:docs",
+    "check": "npm test && npm run check:contracts && npm run check:catalog && npm run check:docs",
     "test:geometry": "PYTHONPATH=packages/cad-geometry-python/src python3 -m unittest discover -s packages/cad-geometry-python/tests -v",
-    "check:geometry": "npm run test:geometry"
+    "check:geometry": "npm run test:geometry",
+    "check:contracts": "python3 scripts/generate_contracts.py --check",
+    "check:catalog": "python3 -m unittest discover -s packages/cad-store/tests -v",
+    "check:parity": "python3 scripts/check_contract_parity.py"
   },
   "engines": {
     "node": ">=20"

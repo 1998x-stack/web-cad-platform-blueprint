@@ -10,7 +10,7 @@ requires-python = ">=3.11,<3.14"
 dependencies = ["cadquery-ocp==7.9.3.1.1"]
 
 [project.optional-dependencies]
-test = ["pytest>=8,<10"]
+test = ["pytest>=8,<10", "jsonschema>=4.21,<5"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

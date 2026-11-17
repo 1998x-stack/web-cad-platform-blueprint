@@ -52,7 +52,7 @@ class GeometryTests(unittest.TestCase):
     def test_missing_dependency_fails_closed(self):
         bad = copy.deepcopy(FIXTURE)
         bad["features"][-1]["inputs"][1] = "not_found"
-        with self.assertRaisesRegex(GeometryError, "earlier features"):
+        with self.assertRaisesRegex(GeometryError, "missing dependency"):
             build(bad)
 
     def test_duplicate_feature_id_rejected(self):
@@ -104,3 +104,64 @@ class GeometryTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ContractRegressionTests(unittest.TestCase):
+    def test_reverse_feature_order_builds_same_valid_output(self):
+        scrambled=copy.deepcopy(FIXTURE)
+        scrambled['features'].reverse()
+        before=evidence(build(FIXTURE)); after=evidence(build(scrambled))
+        self.assertTrue(before.valid and after.valid)
+        self.assertAlmostEqual(before.volume_mm3,after.volume_mm3,delta=1e-4)
+        self.assertEqual(before.bbox_mm,after.bbox_mm)
+
+    def test_only_parameter_change_drives_exact_hole_diameter(self):
+        document=copy.deepcopy(FIXTURE)
+        document['parameters']['holeRadius']['value']=6
+        before=evidence(build(FIXTURE))
+        after=evidence(build(document))
+        self.assertAlmostEqual(after.volume_mm3,120*60*30 - math.pi*6**2*30,delta=1e-3)
+        self.assertGreater(before.volume_mm3,after.volume_mm3)
+        self.assertEqual(document['features'][1]['radiusMm'], {'parameterRef':'holeRadius'})
+
+    def test_invalid_param_ref_or_kind_fails_closed(self):
+        for badvalue in ({'parameterRef':'missing'},{'parameterRef': 1},{'hack':'foo'}):
+            document=copy.deepcopy(FIXTURE)
+            document['features'][1]['radiusMm']=badvalue
+            with self.assertRaises(GeometryError):build(document)
+        document=copy.deepcopy(FIXTURE);document['parameters']['holeRadius']['kind']='count'
+        with self.assertRaisesRegex(GeometryError,'length'):build(document)
+
+    def test_explicit_output_body_and_invalid_dependencies(self):
+        d=copy.deepcopy(FIXTURE);d.pop('outputBodyId')
+        with self.assertRaisesRegex(GeometryError,'outputBodyId'):build(d)
+        d=copy.deepcopy(FIXTURE);d['outputBodyId']='base'
+        self.assertAlmostEqual(evidence(build(d)).volume_mm3,120*60*30,delta=1e-3)
+        d=copy.deepcopy(FIXTURE);d['features'][2]['inputs']=['result','base']
+        with self.assertRaisesRegex(GeometryError,'cyclic'):build(d)
+
+    def test_js_parameter_transaction_drives_native_brep(self):
+        import subprocess
+        repo=Path(__file__).resolve().parents[3]
+        result=subprocess.run(['node','scripts/create_parameter_revision.mjs'],cwd=repo,
+          capture_output=True,text=True,check=True)
+        candidate=json.loads(result.stdout)
+        self.assertEqual(candidate['revision'],FIXTURE['revision']+1)
+        self.assertEqual(candidate['parameters']['holeRadius']['value'],6)
+        ev=evidence(build(candidate))
+        self.assertAlmostEqual(ev.volume_mm3,120*60*30-math.pi*6**2*30,delta=1e-3)
+
+    def test_standardized_geometry_evidence_schema(self):
+        from cad_geometry.kernel import evidence_contract
+        from jsonschema import Draft202012Validator
+        repo=Path(__file__).resolve().parents[3]
+        schema=json.loads((repo/'packages/cad-contracts/schema/geometry-evidence.v1.schema.json').read_text())
+        dto=evidence_contract(FIXTURE,evidence(build(FIXTURE)))
+        Draft202012Validator(schema).validate(dto)
+        self.assertEqual(dto['solidCount'],1)
+        self.assertGreater(dto['surfaceAreaMm2'],0)
+
+    def test_output_body_independent_of_unreferenced_extra_primitive(self):
+        d=copy.deepcopy(FIXTURE);d['features'].append({
+          'id':'later','type':'box','inputs':[],'originMm':[999,0,0],'sizeMm':[1,1,1]})
+        self.assertAlmostEqual(evidence(build(d)).volume_mm3,evidence(build(FIXTURE)).volume_mm3,delta=1e-4)
