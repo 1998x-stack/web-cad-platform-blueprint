@@ -42,3 +42,5 @@ Date / Owner / Status
 - [0002｜Contract parity & phase gates](0002-contract-parity-and-phase-gates.md)：当前为 Proposed，待实现与浏览器证据后才能标为 Accepted。
 
 上表 `ADR-001`…`ADR-009` 是原蓝图的**主题编号**，并非已落实的文件编号或已经完成的决定。实际审计和状态以 `0001`、`0002` 等决策文件为准。
+
+- [0003｜P0 OCCT WASM single-thread Worker](0003-occt-wasm-single-thread-worker.md)：Proposed，待真实 CI / 浏览器兼容证据。
