@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "sketchId": "RotatedSketch",
+  "revision": 1,
+  "units": "mm",
+  "plane": "XY",
+  "points": [
+    {
+      "id": "P0",
+      "x": 0.0,
+      "y": 0.0,
+      "fixed": true
+    },
+    {
+      "id": "P1",
+      "x": 34.64101615137755,
+      "y": 19.999999999999996,
+      "fixed": true
+    },
+    {
+      "id": "P2",
+      "x": 24.64101615137755,
+      "y": 37.32050807568877,
+      "fixed": true
+    },
+    {
+      "id": "P3",
+      "x": -9.999999999999998,
+      "y": 17.320508075688775,
+      "fixed": true
+    }
+  ],
+  "lines": [
+    {
+      "id": "L0",
+      "start": "P0",
+      "end": "P1"
+    },
+    {
+      "id": "L1",
+      "start": "P1",
+      "end": "P2"
+    },
+    {
+      "id": "L2",
+      "start": "P2",
+      "end": "P3"
+    },
+    {
+      "id": "L3",
+      "start": "P3",
+      "end": "P0"
+    }
+  ],
+  "circles": [],
+  "constraints": []
+}

@@ -46,3 +46,5 @@ Date / Owner / Status
 - [0003｜P0 OCCT WASM single-thread Worker](0003-occt-wasm-single-thread-worker.md)：Proposed，待真实 CI / 浏览器兼容证据。
 
 - [ADR-0004 planegcs Dedicated Worker + limited profile](0004-planegcs-dedicated-worker-and-limited-profile.md)
+
+- [ADR-0005: 真正 Wire → Face → Extrude](0005-planar-wire-face-extrusion.md)

@@ -245,6 +245,55 @@
             "type",
             "inputs",
             "plane",
+            "sourceSketchId",
+            "sourceSketchRevision",
+            "pointsMm"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/id"
+            },
+            "type": {
+              "const": "profile"
+            },
+            "inputs": {
+              "type": "array",
+              "minItems": 0,
+              "maxItems": 0
+            },
+            "plane": {
+              "const": "XY"
+            },
+            "sourceSketchId": {
+              "$ref": "#/$defs/id"
+            },
+            "sourceSketchRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pointsMm": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 128,
+              "items": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "type",
+            "inputs",
+            "plane",
             "entities",
             "constraints"
           ],
@@ -330,6 +379,26 @@
         },
         "axis": {
           "const": "Z"
+        },
+        "pointsMm": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 128,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "sourceSketchId": {
+          "$ref": "#/$defs/id"
+        },
+        "sourceSketchRevision": {
+          "type": "integer",
+          "minimum": 0
         }
       },
       "minProperties": 1

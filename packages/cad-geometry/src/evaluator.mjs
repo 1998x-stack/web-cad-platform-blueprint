@@ -1,3 +1,4 @@
+import {validateClosedProfile} from '../../cad-sketch/src/profile.mjs';
 /** CAD-004: strict P0 B-Rep evaluator. No mesh is used as a design input. */
 const ID = /^[A-Za-z][A-Za-z0-9_-]{0,63}$/;
 const MAX_DIMENSION_MM = 1e6;
@@ -64,10 +65,31 @@ function ensureSolid(kernel, shape, id){
 }
 /** @param {any} kernel occt-wasm OcctKernel with arena based ShapeHandle */
 export function buildExactSolid(kernel, document) {
-  const order=featureOrder(document), shapes=new Map();
+  const order=featureOrder(document), shapes=new Map(),byType=new Map(order.map(f=>[f.id,f.type]));
   for (const f of order) {
     let s;
-    if(f.type==='box'){
+    if(f.type==='profile'){
+      checkOnly(f,['id','type','inputs','plane','sourceSketchId','sourceSketchRevision','pointsMm'],f.id);
+      if(f.inputs.length!==0||f.plane!=='XY'||!validId(f.sourceSketchId)||!Number.isSafeInteger(f.sourceSketchRevision)||f.sourceSketchRevision<0)fail('INVALID_PROFILE',`${f.id}: invalid solved profile metadata`);
+      const p=validateClosedProfile(f.pointsMm).pointsMm;
+      const edges=[];let wire;
+      try {
+        for(let i=0;i<p.length;i++){
+          const a=p[i],b=p[(i+1)%p.length];
+          edges.push(kernel.makeLineEdge({x:a[0],y:a[1],z:0},{x:b[0],y:b[1],z:0}));
+        }
+        wire=kernel.makeWire(edges);
+        s=kernel.makeFace(wire);
+      }finally{
+        if(wire!==undefined)kernel.release(wire);
+        for(const e of edges)kernel.release(e);
+      }
+      if(!kernel.isValid(s))fail('INVALID_PROFILE',`${f.id}: invalid OCCT face`);
+    }else if(f.type==='extrude'){
+      checkOnly(f,['id','type','inputs','distanceMm'],f.id);
+      if(f.inputs.length!==1||!shapes.has(f.inputs[0])||byType.get(f.inputs[0])!=='profile')fail('INVALID_FEATURE',`${f.id}: extrude requires one evaluated planar profile`);
+      s=kernel.extrude(shapes.get(f.inputs[0]),0,0,lengthOf(f.distanceMm,document.parameters,'distanceMm'));
+    }else if(f.type==='box'){
       checkOnly(f,['id','type','inputs','originMm','sizeMm'],f.id);
       if(f.inputs.length!==0)fail('INVALID_FEATURE',`${f.id}: box inputs must be empty`);
       const p=vec3(f.originMm,'originMm');
@@ -83,16 +105,17 @@ export function buildExactSolid(kernel, document) {
       if(p.some(v=>v!==0)){const moved=kernel.translate(s,...p);kernel.release(s);s=moved;}
     }else if(f.type==='boolean'){
       checkOnly(f,['id','type','inputs','booleanOp'],f.id);
-      if(f.inputs.length!==2||f.inputs[0]===f.inputs[1]||!f.inputs.every(id=>shapes.has(id)))fail('INVALID_FEATURE',`${f.id}: boolean requires two distinct evaluated inputs`);
+      if(f.inputs.length!==2||f.inputs[0]===f.inputs[1]||!f.inputs.every(id=>shapes.has(id)&&byType.get(id)!=='profile'))fail('INVALID_FEATURE',`${f.id}: boolean requires two distinct evaluated solid inputs`);
       const [a,b]=f.inputs.map(id=>shapes.get(id));
       if(f.booleanOp==='cut')s=kernel.cut(a,b);
       else if(f.booleanOp==='union')s=kernel.fuse(a,b);
       else if(f.booleanOp==='intersect')s=kernel.common(a,b);
       else fail('UNSUPPORTED_FEATURE',`${f.id}: unsupported boolean operation`);
     }else fail('UNSUPPORTED_FEATURE',`${f.id}: ${f.type} not yet supported by P0 geometry runtime`);
-    ensureSolid(kernel,s,f.id);
+    if(f.type!=='profile')ensureSolid(kernel,s,f.id);
     shapes.set(f.id,s);
   }
+  if(byType.get(document.outputBodyId)==='profile')fail('INVALID_OUTPUT','outputBodyId must identify a solid');
   const shape=shapes.get(document.outputBodyId);
   const bbox=kernel.getBoundingBox(shape,{precise:true});
   const bounds=['xmin','ymin','zmin','xmax','ymax','zmax'].map(k=>bbox[k]);

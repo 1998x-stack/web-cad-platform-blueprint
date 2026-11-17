@@ -23,3 +23,5 @@ npm run dev:studio
 ## CAD-006 sketch experiment
 
 Open `/sketch.html` after `npm run dev:studio`. Real planegcs sketch WASM runs in its own Worker; a fully constrained axis-aligned rectangle is converted to the existing exact OCCT Box feature. This is a limited spike, not general 2D-to-3D extrusion. See `../../docs/27-cad-006-planegcs-sketch-worker.md`.
+
+- CAD-007: open `http://127.0.0.1:4173/profile.html` for multi-polygon exact profile extrusion, Undo/Redo and STEP.

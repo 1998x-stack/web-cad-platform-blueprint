@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "sketchId": "TriangleSketch",
+  "revision": 1,
+  "units": "mm",
+  "plane": "XY",
+  "points": [
+    {
+      "id": "P0",
+      "x": 0.0,
+      "y": 0.0,
+      "fixed": true
+    },
+    {
+      "id": "P1",
+      "x": 100.0,
+      "y": 0.0,
+      "fixed": true
+    },
+    {
+      "id": "P2",
+      "x": 0.0,
+      "y": 120.0,
+      "fixed": true
+    }
+  ],
+  "lines": [
+    {
+      "id": "L0",
+      "start": "P0",
+      "end": "P1"
+    },
+    {
+      "id": "L1",
+      "start": "P1",
+      "end": "P2"
+    },
+    {
+      "id": "L2",
+      "start": "P2",
+      "end": "P0"
+    }
+  ],
+  "circles": [],
+  "constraints": []
+}

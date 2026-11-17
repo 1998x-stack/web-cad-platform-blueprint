@@ -157,3 +157,12 @@ python3 scripts/verify_blueprint.py   # 文档链接、SQLite 迁移与样例校
 - `AGENTS.md`：跨代理统一门禁与事实声明规范。
 
 这些 Skill 是**本项目的开发规范**，不是能直接完成 CAD 建模的生产 MCP 工具。
+
+
+## CAD-007 · 精确多边形 Profile Spike（下一阶段）
+
+- [详细实现与验收边界](docs/28-cad-007-profile-history-lifecycle.md)；[ADR-0005](docs/adr/0005-planar-wire-face-extrusion.md)。
+- 在原 `/sketch.html` CAD-006 矩形演示之外，新增 `/profile.html`，支持真实 planegcs Worker、单闭环折线、OCCT `Wire → Face → Extrude`、STEP 下载和单机本地 Undo/Redo。
+- 三角形、旋转矩形、凹 L 形保留几何形状；不对曲线、洞、断开轮廓和自相交线条静默转换为包围盒。
+- `npm run test:profile-unit`、`npm run test:profile-wasm`、`npm run test:profile-browser` 对应纯代码/真实 WASM/Chromium-Firefox-WebKit 分层验证。
+- 100 次生命周期测试不是严格的 WASM 堆泄漏证明，WebKit/Linux 也不是 macOS Safari 真机认证。

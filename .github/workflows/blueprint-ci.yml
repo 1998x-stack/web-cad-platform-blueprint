@@ -15,6 +15,7 @@ jobs:
           python-version: '3.12'
       - run: npm test
       - run: npm run test:sketch-unit
+      - run: npm run test:profile-unit
       - run: python3 scripts/generate_contracts.py --check
       - run: python3 -m unittest discover -s packages/cad-store/tests -v
       - run: python3 scripts/verify_blueprint.py
@@ -57,7 +58,7 @@ jobs:
 
   wasm-worker-and-browser:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -69,6 +70,8 @@ jobs:
         run: npm run test:worker-unit
       - name: Real planegcs WASM sketch constraint regression
         run: npm run test:sketch-wasm
+      - name: CAD-007 actual planegcs + OCCT WASM profile/STEP + 100 build/release cycles
+        run: npm run test:profile-wasm
       - name: Real OCCT WASM in Node Worker; numerical native parity
         run: WASM_STEP_OUTPUT=/tmp/wasm-precision.step npm run test:wasm
       - uses: actions/setup-python@v5
@@ -80,9 +83,11 @@ jobs:
         run: PYTHONPATH=packages/cad-geometry-python/src python scripts/verify_wasm_step_with_native.py /tmp/wasm-precision.step
       - name: Production bundle build
         run: npm run build:studio
-      - name: Install headless Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install headless Chromium Firefox WebKit
+        run: npx playwright install --with-deps chromium firefox webkit
       - name: Browser dedicated-worker Playwright E2E
         run: npm run test:browser
       - name: Browser real planegcs sketch + OCCT B-Rep Playwright E2E
         run: npm run test:sketch-browser
+      - name: CAD-007 real WASM profile E2E on Chromium Firefox WebKit
+        run: npm run test:profile-browser

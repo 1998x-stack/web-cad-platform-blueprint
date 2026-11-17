@@ -54,6 +54,7 @@ export function createCadWorkerRuntime({loadKernel, send}) {
       }
       send({v:1,requestId:id,kind:'result',result},transfer);
     }catch(err){
+      if(msg?.kind==='build' && msg.generation===generation && active===null){try{kernel?.releaseAll();}catch{}}
       send({v:1,requestId:id,kind:'error',error:{code:err instanceof CadGeometryError?err.code:typeof err?.code==='string'?err.code:'KERNEL_FAILURE',message:String(err?.message||err).slice(0,400)}});
     }finally{busy=false;}
   }
