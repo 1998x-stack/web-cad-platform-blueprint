@@ -1,5 +1,7 @@
 # 17｜第一月任务执行计划（四个 Sprint）
 
+> **2026-11-17 调整：**原首月 Sprint 1–2 中的 native OCCT/STEP Spike 已经完成，不能从零重新计数；浏览器 WASM、跨运行时协议、planegcs 和真实性能仍未实现。本文保留为**初始路线历史快照**，不再作为当前执行周计划。新计划请以 [21｜下一阶段里程碑](21-next-milestones-p0-p2.md) 和 [`planning/p0-p2-next-backlog.csv`](../planning/p0-p2-next-backlog.csv) 为准。
+
 ## Sprint 1 — 明确“能做 CAD”的最低证明
 
 目标：确定许可证、Document Schema、CommandEngine 基础测试，并运行 OCCT WASM 的第一个精确盒体。

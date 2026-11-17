@@ -15,6 +15,7 @@ jobs:
           python-version: '3.12'
       - run: npm test
       - run: python3 scripts/verify_blueprint.py
+      - run: python3 scripts/audit_next_milestones.py
 
   native-occt-and-step:
     runs-on: ubuntu-latest

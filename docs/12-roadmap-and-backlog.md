@@ -2,6 +2,8 @@
 
 > 工期为**规划估算**，不是承诺；按 2–4 名熟悉 TS/前端/几何内核的工程师作粗略估计，单人一般更长。需求优先级和实现方式可随 Spike 结果调整。
 
+> **2026-11-17 Review 更新：**本页是 P0–P6 的长期阶段目录，不代表当前可用功能。`CAD-004` 的 native oracle 已完成、浏览器 Worker 未实现；`CAD-005` 仅通过单实体 STEP Spike。详细阻断项见 [工程 Review](20-deep-review-and-gaps.md)，修订后的可执行计划见 [P0–P2 下一阶段里程碑](21-next-milestones-p0-p2.md)。当前应优先修复 R-01/R-02/R-03/R-05，再做浏览器 WASM。
+
 ## 12.1 依赖图
 
 ```mermaid
@@ -18,7 +20,9 @@ flowchart LR
  P5 --> P6
 ```
 
-> CAD-004 已完成原生 OCCT 参考实现但 WASM 未完成；CAD-005 的基础 STEP 往返 Spike 已通过。详见 [本地验证记录](19-cad-004-005-evidence.md)。\n\n## 12.2 P0 — 架构验证（2–3 周）
+> CAD-004 已完成原生 OCCT 参考实现但 WASM 未完成；CAD-005 的基础 STEP 往返 Spike 已通过。详见 [本地验证记录](19-cad-004-005-evidence.md)。
+
+## 12.2 P0 — 架构验证（2–3 周）
 
 | ID | 子任务 | 依赖 | 验收 |
 | --- | --- | --- | --- |
@@ -31,7 +35,7 @@ flowchart LR
 | CAD-007 | 浏览器可用性/内存基准 | CAD-004 | 记录设备、WASM 包大小、初始化时间、100 次构建内存 |
 | CAD-008 | P0 ADR 和风险评审 | 001–007 | go/no-go 决策与变更记录 |
 
-**P0 Gate**：真实精确几何与 STEP 回读验证 + 文档事务测试全部通过，才继续宣称具备 CAD 内核。
+**P0 Gate（修订）**：跨运行时 Schema/执行语义一致 + 浏览器实际 WASM Worker 精确几何 + STEP 独立回读 + Solver Spike + 生命周期证据 + 版本/许可证审核同时通过，方可宣布 P0。原生 OCCT 的成功**不能替代浏览器验收**。完整条件见 [21](21-next-milestones-p0-p2.md) 与 [22](22-contract-freeze-and-verification.md)。
 
 ## 12.3 P1 — 模型商店（3–5 周）
 
@@ -39,13 +43,13 @@ flowchart LR
 | --- | --- | --- | --- |
 | STORE-001 | SQLite 元数据表与迁移 | CAD-002 | FK、FTS5、索引测试 |
 | STORE-002 | Object Storage manifest 和签名下载 | STORE-001 | hash 一致且私有文件不能公开读取 |
-| STORE-003 | 浏览/搜索/分类/分页 UI | STORE-001 | 10k 记录分页可用；FTS 查询语义可测 |
+| STORE-003 | 浏览/搜索/分类/分页 UI | STORE-001 | 10k 记录分页可用；中文查询召回和 FTS 语义可测 |
 | STORE-004 | Three.js GLB 查看器 | CAD-001 | 相机、拾取、错误状态、内存释放 |
 | STORE-005 | 模型详情/release/权限 | 002–004 | 显示许可、能力等级、格式 |
 | STORE-006 | Copy Reference/Open in Studio | STORE-005 | 引用固定 release，准确生成 ref |
 | STORE-007 | 上传/发布基础流水线 | 001–006 | 授权与文件校验，发布不可变 |
 
-**P1 Gate**：实际完成“检索→预览→复制固定引用→下载”的闭环；不宣称已经是付费商店。
+**P1 Gate（修订）**：通过不可变 release membership/下载 ACL/中文检索/真实 GLB Viewer/资产 hash 证据，完成“检索→预览→复制固定引用→下载”闭环；`Open in Studio` 到 P2 验收，不宣称是付费商店。详见 [23](23-model-store-p1-plan.md)。
 
 ## 12.4 P2 — 参数化 CAD MVP（6–10 周）
 
@@ -58,9 +62,9 @@ flowchart LR
 | CAD-105 | Feature DAG + parameter updates | CAD-003, 104 | 上游改动只重建受影响节点 |
 | CAD-106 | Face/Edge pick identity | 104 | 重建后歧义引用不误选 |
 | CAD-107 | Autosave + local recovery | CAD-002,105 | 刷新关闭/恢复不丢失完整文档 |
-| CAD-108 | CAD E2E fixture | 101–107 | 画→约束→拉伸→改参数→重开→导出 |
+| CAD-108 | CAD E2E fixture | 101–107 | 画→约束→拉伸→改参数→重开→P0 狭义 STEP 导出 |
 
-**P2 Gate**：精确零件不是装饰性 mesh；真实草图尺寸和特征史能修改、保存、重建。
+**P2 Gate（修订）**：精确零件不是装饰性 mesh；真实草图尺寸和特征历史可修改、保存、恢复、增量重建，并由 P0 STEP 子集导出回读。P3 负责扩充格式能力。详见 [24](24-parametric-studio-p2-plan.md)。
 
 ## 12.5 P3 — 文件交换（4–6 周）
 

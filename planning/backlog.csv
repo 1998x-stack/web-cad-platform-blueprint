@@ -1,13 +1,13 @@
-﻿id,phase,title,depends_on,acceptance,status
+id,phase,title,depends_on,acceptance,status
 CAD-001,P0,技术/许可证矩阵,,版本+许可证+替代方案,planned
-CAD-002,P0,Canonical Document Schema,CAD-001,schema 验证和版本兼容,planned
-CAD-003,P0,CommandEngine 原子事务,CAD-002,revision+DAG+rollback 单测,planned
+CAD-002,P0,Canonical Document Schema,CAD-001,schema 验证和版本兼容,partial-drift-review-open
+CAD-003,P0,CommandEngine 原子事务,CAD-002,revision+DAG+rollback 单测,domain-poc-passed-not-prod
 CAD-004,P0,OCCT WASM Worker,CAD-001,真实 B-Rep 和体积校验,partial-native-oracle
 CAD-005,P0,STEP Round-trip,CAD-004,精确回读并比较 bbox/volume,spike-passed
 CAD-006,P0,Sketch Solver Spike,CAD-001,约束诊断通过,planned
 CAD-007,P0,内存与浏览器基准,CAD-004,记录设备、包体积、100 次构建,planned
 CAD-008,P0,ADR 与 Go/No-go,CAD-001;CAD-002;CAD-003;CAD-004;CAD-005;CAD-006;CAD-007,风险评审完成,planned
-STORE-001,P1,SQLite 元数据迁移,CAD-002,FK+FTS5+索引测试,planned
+STORE-001,P1,SQLite 元数据迁移,CAD-002,FK+FTS5+索引测试,migration-spike-only
 STORE-002,P1,内容对象存储与下载,STORE-001,hash一致且ACL成功,planned
 STORE-003,P1,浏览检索分类,STORE-001,10k索引检索通过,planned
 STORE-004,P1,GLB Three.js Viewer,CAD-001,相机/拾取/内存释放,planned
