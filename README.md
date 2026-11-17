@@ -12,9 +12,32 @@
 **当前状态：** 使用原生 OCCT 完成几何构建、校验与 STEP 往返；浏览器 WASM Worker 尚未实现，不能把本参考内核称为完整 Web CAD。
 
 
+## 最新实现进展｜v1.2 Contract + Native Geometry + Catalog Hardening
+
+> **代码修复已在本地执行，但浏览器 WASM Worker、真实 Studio、API 鉴权和 P1 完整 Gallery 仍未完成。** P0 G0 / P1 G1 / P2 G2 均尚未放行。
+
+- **P0 JS/native 合同**：提供 Schema v1 生成器（Document/Transaction/GeometryEvidence/WorkerEnvelope）、显式 `outputBodyId`、确定性 DAG 依赖排序，以及长度参数引用；16 组跨语言 solid fixtures 一致。
+- **真实参数重建与 STEP**：`node scripts/create_parameter_revision.mjs` 生成孔径 12mm 的 revision 2；原生 OCCT 使用改动的参数产生有效 B-Rep，并导出及独立回读 [`samples/precision-block-r6.step`](samples/precision-block-r6.step)。
+- **P1 数据安全**：SQLite `002_immutable_publications.sql` 新增 staging/published 发布状态、已发布资产清单/资产的不可变触发器；catalog service 生成并固定 manifest SHA。中文搜索目前是**受限的子串扫描回退**（非正式中文分词），10k 合成数据基准仅用于可行性估计。
+- **已运行的测试**：17 项 Node、18 项 native Python、6 项 SQLite catalog，Schema parity 16 组；新增 CI 作业及检查脚本。
+- [v1.2 实施证据、限制与下一步](docs/25-implementation-evidence-contract-store.md)。
+
+### 快速复验
+
+```bash
+npm run check
+python -m pip install -e 'packages/cad-geometry-python[test]'
+python scripts/check_contract_parity.py
+npm run test:geometry
+node scripts/create_parameter_revision.mjs > /tmp/r6.cad.json
+PYTHONPATH=packages/cad-geometry-python/src python -m cad_geometry.cli run /tmp/r6.cad.json \
+  --step /tmp/r6.step --report /tmp/r6.evidence.json
+python scripts/benchmark_catalog_search.py
+```
+
 ## 下一阶段工程 Review 与 P0–P2 计划（2026-11-17）
 
-> 当前 `main` 的 12 项 JS / 11 项 Python 测试通过，但不代表浏览器 WASM、完整商店或参数化 Studio 已完成。Review 发现 Schema 漂移、JS/native DAG 语义不一致、参数不驱动几何、发布资产 membership 可变和中文检索问题；这些是后续实施的核心阻断项。
+> **历史 Review 基线**为 12 项 JS / 11 项 Python。上述阻塞项已在 native/contract/SQLite 参考实现中部分修复；浏览器 Worker、真实 API、Studio 仍是未完成的阶段任务。详情参阅 v1.2 证据文档。
 
 - [20｜工程级 Review 与缺口](docs/20-deep-review-and-gaps.md)：已复现问题、风险与优先级。
 - [21｜下一阶段 P0–P2 核心里程碑](docs/21-next-milestones-p0-p2.md)：M0–M6、G0/G1/G2、依赖、排期与验收。
@@ -23,7 +46,7 @@
 - [24｜P2 Parametric Studio 实施设计](docs/24-parametric-studio-p2-plan.md)：草图约束、特征树、参数化重建、恢复和导出。
 - [下一阶段任务拆解 CSV](planning/p0-p2-next-backlog.csv)：按 Gate 与依赖排序。
 
-**第一项实施 PR 应是 Schema/执行语义收敛，而不是直接扩展 UI。** 原有 P0–P6 目录是阶段蓝图，更新后的 Go/No-Go 以 [21](docs/21-next-milestones-p0-p2.md) 为准。
+**优先推进 Schema/执行语义收敛，再实现真正的浏览器 WASM Worker，而不是直接扩展 UI。** 原有 P0–P6 目录是阶段蓝图，更新后的 Go/No-Go 以 [21](docs/21-next-milestones-p0-p2.md) 为准。
 
 ## 项目目标
 

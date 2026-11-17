@@ -4,11 +4,32 @@
   "revision": 1,
   "units": "mm",
   "parameters": {
-    "width": {"kind": "length", "value": 60},
-    "length": {"kind": "length", "value": 120}
+    "width": {
+      "kind": "length",
+      "value": 60
+    },
+    "length": {
+      "kind": "length",
+      "value": 120
+    }
   },
   "features": [
-    {"id": "sketch_1", "type": "sketch", "inputs": [], "plane": "XY", "entities": [], "constraints": []},
-    {"id": "extrude_1", "type": "extrude", "inputs": ["sketch_1"], "distanceMm": 30}
-  ]
+    {
+      "id": "sketch_1",
+      "type": "sketch",
+      "inputs": [],
+      "plane": "XY",
+      "entities": [],
+      "constraints": []
+    },
+    {
+      "id": "extrude_1",
+      "type": "extrude",
+      "inputs": [
+        "sketch_1"
+      ],
+      "distanceMm": 30
+    }
+  ],
+  "outputBodyId": "extrude_1"
 }

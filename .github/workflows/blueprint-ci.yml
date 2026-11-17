@@ -14,6 +14,8 @@ jobs:
         with:
           python-version: '3.12'
       - run: npm test
+      - run: python3 scripts/generate_contracts.py --check
+      - run: python3 -m unittest discover -s packages/cad-store/tests -v
       - run: python3 scripts/verify_blueprint.py
       - run: python3 scripts/audit_next_milestones.py
 
@@ -27,6 +29,13 @@ jobs:
           python-version: '3.12'
       - name: Install pinned native OpenCascade binding
         run: python -m pip install --disable-pip-version-check -e packages/cad-geometry-python
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install JSON Schema validator for cross-runtime parity
+        run: python -m pip install --disable-pip-version-check 'jsonschema>=4.21,<5'
+      - name: JS/schema/native cross-runtime contract regression
+        run: python scripts/check_contract_parity.py
       - name: OCCT geometry and independent STEP roundtrip tests
         run: PYTHONPATH=packages/cad-geometry-python/src python -m unittest discover -s packages/cad-geometry-python/tests -v
       - name: Generate real STEP + evidence report

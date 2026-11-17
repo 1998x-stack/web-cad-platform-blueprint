@@ -1,0 +1,59 @@
+{
+  "documentId": "precision_block_001",
+  "documentRevision": 2,
+  "kernel": {
+    "binding": "cadquery-ocp",
+    "version": "7.9.3.1.1",
+    "family": "OCCT",
+    "runtime": "native"
+  },
+  "source": {
+    "valid": true,
+    "solids": 1,
+    "volume_mm3": 212607.079934123,
+    "bbox_mm": [
+      -1e-07,
+      -1e-07,
+      -1e-07,
+      120.0000001,
+      60.0000001,
+      30.0000001
+    ],
+    "area_mm2": 26104.778684233857,
+    "faces": 7
+  },
+  "imported": {
+    "valid": true,
+    "solids": 1,
+    "volume_mm3": 212607.07993412288,
+    "bbox_mm": [
+      -1e-07,
+      -1e-07,
+      -1e-07,
+      120.0000001,
+      60.0000001,
+      30.0000001
+    ],
+    "area_mm2": 26104.778684233934,
+    "faces": 7
+  },
+  "roundTrip": {
+    "passed": true,
+    "volumeDeltaMm3": 1.1641532182693481e-10,
+    "bboxMaxDeltaMm": 0.0,
+    "areaDeltaMm2": 7.639755494892597e-11,
+    "faceCountBefore": 7,
+    "faceCountAfter": 7,
+    "tolerances": {
+      "volumeAbsMm3": 0.001,
+      "bboxAbsMm": 0.0001,
+      "areaAbsMm2": 0.001
+    }
+  },
+  "artifact": {
+    "format": "STEP",
+    "sha256": "86b6624525540cd14e2448f61c26d7f5fe8fc3abc84714dcde488434cedb2668",
+    "bytes": 19041,
+    "file": "precision-block-r6.step"
+  }
+}
