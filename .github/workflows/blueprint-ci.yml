@@ -14,6 +14,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: npm test
+      - run: npm run test:sketch-unit
       - run: python3 scripts/generate_contracts.py --check
       - run: python3 -m unittest discover -s packages/cad-store/tests -v
       - run: python3 scripts/verify_blueprint.py
@@ -34,6 +35,8 @@ jobs:
           node-version: '22'
       - name: Install JSON Schema validator for cross-runtime parity
         run: python -m pip install --disable-pip-version-check 'jsonschema>=4.21,<5'
+      - name: Validate sketch samples against Draft 2020-12 JSON Schema
+        run: python scripts/check_sketch_schema.py
       - name: JS/schema/native cross-runtime contract regression
         run: python scripts/check_contract_parity.py
       - name: OCCT geometry and independent STEP roundtrip tests
@@ -64,6 +67,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Pure worker runtime tests (no mocked precision claim)
         run: npm run test:worker-unit
+      - name: Real planegcs WASM sketch constraint regression
+        run: npm run test:sketch-wasm
       - name: Real OCCT WASM in Node Worker; numerical native parity
         run: WASM_STEP_OUTPUT=/tmp/wasm-precision.step npm run test:wasm
       - uses: actions/setup-python@v5
@@ -79,3 +84,5 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Browser dedicated-worker Playwright E2E
         run: npm run test:browser
+      - name: Browser real planegcs sketch + OCCT B-Rep Playwright E2E
+        run: npm run test:sketch-browser

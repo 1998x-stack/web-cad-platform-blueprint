@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Web CAD · CAD-006 2D 草图求解</title></head>
+<body><main class="layout sketch-layout">
+<aside class="sidebar"><h1>CAD-006 <span>约束草图</span></h1><p class="sub">真实 planegcs WASM 求解器 · XY / mm</p>
+<a href="/">← 返回 OCCT 基准工作台</a><h2>矩形尺寸</h2>
+<label for="width">宽度 (mm)</label><input id="width" type="number" min="1" max="1000" step="1" value="120"/>
+<label for="height">高度 (mm)</label><input id="height" type="number" min="1" max="1000" step="1" value="60"/>
+<label for="thickness">拉伸厚度 (mm)</label><input id="thickness" type="number" min="1" max="1000" step="1" value="30"/>
+<button id="solve">求解草图 + 精确建模</button><button id="width150">宽度改为 150 mm</button>
+<button id="under">试验：欠约束</button><button id="conflict">试验：冲突约束</button><button id="export">导出真实 STEP</button>
+<div class="report"><h2>求解与几何证据</h2><pre id="sketch-metrics">初始化中…</pre></div><p id="sketch-status" role="status">WASM 正在初始化</p>
+<small>范围：线段、固定点、水平/垂直、点间距离和重合；此页面将**完全约束的轴对齐矩形**映射为精确 OCCT Box，通用轮廓拉伸尚未完成。</small>
+</aside>
+<section class="stage"><div class="stage-header">SKETCH 2D / SOLID 3D <span id="sketch-indicator">Workers: starting</span></div>
+<div class="sketch-two-views"><div class="sketch-panel"><h2>XY 草图</h2><svg id="sketch-view" viewBox="0 0 360 260" role="img" aria-label="约束矩形草图"></svg></div><div id="sketch-solid-view"></div></div>
+<div class="stage-footer">精确建模在独立的 OCCT Worker 中执行。冲突时保留上一次有效实体。</div></section></main>
+<script type="module" src="/src/sketch-main.mjs"></script></body></html>

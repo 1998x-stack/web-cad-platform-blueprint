@@ -2,6 +2,14 @@
 
 > **版本**：v1.0 · **调研基准**：2026-11-17 · **状态**：规划与可执行命令引擎概念验证（**不是完整 CAD 产品**）
 
+## CAD-006 草图约束求解（v1.4）
+
+- 基于 `@salusoft89/planegcs@1.3.0` 的**真实 2D WASM 求解器**，在独立浏览器 Worker 运行；支持点/线/圆和水平、垂直、距离、重合、半径子集。
+- 草图实验页：`npm install && npm run dev:studio`，访问 `/sketch.html`；完全约束 120×60 矩形转换成等价精确 OCCT Box 并可导出 STEP。
+- 欠约束、冲突、残差过大时 fail closed，保留最后有效实体。**本阶段不支持任意曲线的通用 Extrude，也不代表完成 P0 G0/P2 G2。**
+- [CAD-006 详细技术文档](docs/27-cad-006-planegcs-sketch-worker.md) / [ADR-0004](docs/adr/0004-planegcs-dedicated-worker-and-limited-profile.md)
+- 测试：`npm run test:sketch-unit`；真实 WASM：`npm run test:sketch-wasm`；浏览器：`npm run test:sketch-browser`。
+
 ## CAD-004 浏览器 WASM Worker 实现（v1.3 候选）
 
 > `occt-wasm@5.17.2` 真正运行在 Dedicated Worker 内，并提供独立 Node WASM 与 Chromium 浏览器测试，最终通过状态以 GitHub CI 为准。**不代表完整 P0 G0 通过，Solver、Safari/Firefox 与 100-cycle 仍待验证。**

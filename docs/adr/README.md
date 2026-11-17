@@ -44,3 +44,5 @@ Date / Owner / Status
 上表 `ADR-001`…`ADR-009` 是原蓝图的**主题编号**，并非已落实的文件编号或已经完成的决定。实际审计和状态以 `0001`、`0002` 等决策文件为准。
 
 - [0003｜P0 OCCT WASM single-thread Worker](0003-occt-wasm-single-thread-worker.md)：Proposed，待真实 CI / 浏览器兼容证据。
+
+- [ADR-0004 planegcs Dedicated Worker + limited profile](0004-planegcs-dedicated-worker-and-limited-profile.md)

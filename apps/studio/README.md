@@ -18,3 +18,8 @@ npm run dev:studio
 ```
 
 详细见 `docs/26-browser-occt-wasm-worker-spike.md`。
+
+
+## CAD-006 sketch experiment
+
+Open `/sketch.html` after `npm run dev:studio`. Real planegcs sketch WASM runs in its own Worker; a fully constrained axis-aligned rectangle is converted to the existing exact OCCT Box feature. This is a limited spike, not general 2D-to-3D extrusion. See `../../docs/27-cad-006-planegcs-sketch-worker.md`.
