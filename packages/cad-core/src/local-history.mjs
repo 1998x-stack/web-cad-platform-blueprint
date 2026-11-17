@@ -1,9 +1,9 @@
 /** CAD-007 local immutable revision snapshots; not server event sourcing nor collaborative PDM. */
-import {validateDocument,hashDocument} from './command-engine.mjs';
+import {featureOrder} from '../../cad-geometry/src/evaluator.mjs';
 const copy=x=>structuredClone(x);
 export class LocalCadHistory {
   constructor(initial,limit=32){
-    validateDocument(initial);
+    featureOrder(initial);
     if(!Number.isSafeInteger(limit)||limit<2||limit>1024)throw new Error('invalid history limit');
     this.limit=limit;this.snapshots=[copy(initial)];this.cursor=0;
   }
@@ -13,14 +13,14 @@ export class LocalCadHistory {
   record(next,{expectedRevision}={}){
     const current=this.snapshots[this.cursor];
     if(expectedRevision!==current.revision)throw Object.assign(new Error('stale history revision'),{code:'REVISION_CONFLICT'});
-    validateDocument(next);
+    featureOrder(next);
     if(next.documentId!==current.documentId||next.units!==current.units||next.revision!==current.revision+1)throw new Error('history requires same document, unit and next revision');
     const candidate=copy(next);
     this.snapshots=this.snapshots.slice(0,this.cursor+1);
     this.snapshots.push(candidate);
     if(this.snapshots.length>this.limit)this.snapshots.shift();
     this.cursor=this.snapshots.length-1;
-    return {revision:candidate.revision,hash:hashDocument(candidate)};
+    return {revision:candidate.revision};
   }
   undo(){if(!this.canUndo)return null;this.cursor--;return this.current;}
   redo(){if(!this.canRedo)return null;this.cursor++;return this.current;}
